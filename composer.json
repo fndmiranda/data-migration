@@ -1,0 +1,29 @@
+{
+    "name": "fndmiranda/data-migrate",
+    "description": "Migrate data to database.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fernando Miranda",
+            "email": "fndmiranda@gmail.com"
+        }
+    ],
+    "require": {
+      "php": ">=5.5.9"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "~7.4"
+    },
+    "autoload": {
+      "psr-4": {
+        "Fndmiranda\\DataMigrate\\": "src/"
+      }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Fndmiranda\\DataMigrate\\Tests\\": "tests/"
+      }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
