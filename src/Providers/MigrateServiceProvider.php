@@ -2,7 +2,8 @@
 
 namespace Fndmiranda\DataMigrate\Providers;
 
-use Fndmiranda\DataMigrate\Migrate;
+use Fndmiranda\DataMigrate\Console\StatusCommand;
+use Fndmiranda\DataMigrate\DataMigrate;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,6 +16,10 @@ class MigrateServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        App::bind('migrate', Migrate::class);
+        App::bind('data-migrate', DataMigrate::class);
+
+        $this->commands([
+            StatusCommand::class,
+        ]);
     }
 }

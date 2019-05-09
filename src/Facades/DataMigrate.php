@@ -4,7 +4,7 @@ namespace Fndmiranda\DataMigrate\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Migrate extends Facade
+class DataMigrate extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -13,6 +13,6 @@ class Migrate extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'migrate';
+        return 'data-migrate';
     }
 }

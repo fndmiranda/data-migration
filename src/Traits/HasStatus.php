@@ -2,38 +2,46 @@
 
 namespace Fndmiranda\DataMigrate\Traits;
 
-use Fndmiranda\DataMigrate\Migrate;
+use Fndmiranda\DataMigrate\Contracts\DataMigrate as ContractDataMigrate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Fndmiranda\DataMigrate\DataMigrate;
 
 trait HasStatus
 {
     /**
+     * The model associated with the data migrate.
+     *
+     * @var Model
+     */
+    private $model;
+
+    /**
      * Show the status of each data.
      *
-     * @param Model|string $model
-     * @param array|Collection $data
-     * @param array|Collection $options
+     * @param ContractDataMigrate $dataMigrate
      * @return Collection
      */
-    public function status($model, $data, $options = [])
+    public function status($dataMigrate)
     {
-        $model = $model instanceof Model ? $model : app($model);
-        $data = $data instanceof Collection ? $data : Collection::make($data);
-        $options = $options instanceof Collection ? $options : Collection::make($options);
+        $dataMigrate = $dataMigrate instanceof ContractDataMigrate ? $dataMigrate : app($dataMigrate);
+        $this->model = app($dataMigrate->model());
+        $data = $dataMigrate->data() instanceof Collection ? $dataMigrate->data() : Collection::make($dataMigrate->data());
+        $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $collection = collect();
+        $relations = data_get($options, 'relations', []);
 
         foreach ($data->unique('name') as $item) {
-            if (!(bool) $model->where($options['identifier'], '=', $item[$options['identifier']])->count()) {
-                $collection->push(['data' => $item, 'status' => Migrate::CREATE]);
+            if (!(bool) $this->model->where($options['identifier'], '=', $item[$options['identifier']])->count()) {
+                $collection->push(['data' => $item, 'status' => DataMigrate::CREATE]);
             } else {
                 $keys = array_keys($item);
-                $clauses = Arr::where($keys, function ($value) use ($options) {
-                    return $value != $options['identifier'];
+                $clauses = Arr::where($keys, function ($value) use ($options, $relations) {
+                    return $value != $options['identifier'] && !in_array($value, array_pluck($relations, 'relation'));
                 });
 
-                $update = (bool) $model->where(function ($query) use ($clauses, $item) {
+                $update = (bool) $this->model->where(function ($query) use ($clauses, $item) {
                     foreach (array_values($clauses) as $key => $clause) {
                         if (!$key) {
                             $query->where($clause, '!=', $item[$clause]);
@@ -44,9 +52,9 @@ trait HasStatus
                 })->where($options['identifier'], '=', $item[$options['identifier']])->count();
 
                 if ($update) {
-                    $collection->push(['data' => $item, 'status' => Migrate::UPDATE]);
+                    $collection->push(['data' => $item, 'status' => DataMigrate::UPDATE]);
                 } else {
-                    $collection->push(['data' => $item, 'status' => Migrate::OK]);
+                    $collection->push(['data' => $item, 'status' => DataMigrate::OK]);
                 }
             }
         }
@@ -55,14 +63,34 @@ trait HasStatus
             return $item['data']['name'];
         });
 
-        $removes = $model->whereNotIn($options['identifier'], $identifiers)->get();
+        $removes = $this->model->whereNotIn($options['identifier'], $identifiers)->get();
 
         foreach ($removes as $remove) {
-            $collection->push(['data' => $remove->toArray(), 'status' => Migrate::DELETE]);
+            $collection->push(['data' => $remove->toArray(), 'status' => DataMigrate::DELETE]);
         }
 
-        $collection->dump();
+        $this->relations($collection, $options);
 
         return $collection;
+    }
+
+    private function relations(Collection $collection, Collection $options)
+    {
+        $relations = data_get($options, 'relations', []);
+
+        foreach ($collection as $item) {
+            foreach ($relations as $relation) {
+                if (Arr::has($item['data'], $relation['relation'])) {
+                    $this->{$relation['type']}($item, $options, $relation['relation']);
+                }
+            }
+        }
+    }
+
+    private function belongsToMany($values, $options, $relation)
+    {
+        dump($values);
+        dump($options);
+        dump($relation);
     }
 }

@@ -4,7 +4,7 @@ namespace Fndmiranda\DataMigrate;
 
 use Fndmiranda\DataMigrate\Traits\HasStatus;
 
-class Migrate
+class DataMigrate
 {
     use HasStatus;
 
