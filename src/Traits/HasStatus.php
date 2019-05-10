@@ -34,7 +34,7 @@ trait HasStatus
         $collection = collect();
         $relations = data_get($options, 'relations', []);
 
-        foreach ($data->unique('name') as $item) {
+        foreach ($data->unique($options['identifier']) as $item) {
             if (!(bool) $this->model->where($options['identifier'], '=', $item[$options['identifier']])->count()) {
                 $collection->push(['data' => $item, 'status' => DataMigrate::CREATE]);
             } else {
@@ -61,8 +61,8 @@ trait HasStatus
             }
         }
 
-        $identifiers = $collection->map(function ($item) {
-            return $item['data']['name'];
+        $identifiers = $collection->map(function ($item) use ($options) {
+            return $item['data'][$options['identifier']];
         });
 
         $removes = $this->model->whereNotIn($options['identifier'], $identifiers)->get();
@@ -88,25 +88,31 @@ trait HasStatus
     private function withRelationsStatus(Collection $dataMigrate, Collection $options)
     {
         $relations = data_get($options, 'relations', []);
-        $collectionWithRelationStatus = collect();
+        $dataMigrateWithRelationStatus = collect();
 
         foreach ($dataMigrate as $item) {
             foreach ($relations as $relation) {
                 if (Arr::has($item['data'], $relation['relation'])) {
                     switch ($relation['type']) {
                         case 'belongsToMany':
-                            $item = $this->belongsToMany($item, $options, $relation['relation']);
+                            $item = $this->statusMany($item, $options, $relation['relation']);
                             break;
                         case 'hasMany':
-                            $item = $this->belongsToMany($item, $options, $relation['relation']);
+                            $item = $this->statusMany($item, $options, $relation['relation']);
+                            break;
+                        case 'hasOne':
+                            $item = $this->statusOne($item, $options, $relation['relation']);
+                            break;
+                        case 'belongsTo':
+                            $item = $this->statusOne($item, $options, $relation['relation']);
                             break;
                     }
                 }
             }
 
-            $collectionWithRelationStatus->push($item);
+            $dataMigrateWithRelationStatus->push($item);
         }
 
-        return $collectionWithRelationStatus;
+        return $dataMigrateWithRelationStatus;
     }
 }

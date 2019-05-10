@@ -35,4 +35,11 @@ class DataMigrate
      * @var string
      */
     const DELETE = 'delete';
+
+    /**
+     * Constant representing a not found status.
+     *
+     * @var string
+     */
+    const NOT_FOUND = 'not_found';
 }

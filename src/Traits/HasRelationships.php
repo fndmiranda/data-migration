@@ -2,9 +2,10 @@
 
 namespace Fndmiranda\DataMigrate\Traits;
 
-use Fndmiranda\DataMigrate\Relations\BelongsToMany;
+use Fndmiranda\DataMigrate\Relations\StatusMany;
+use Fndmiranda\DataMigrate\Relations\StatusOne;
 
 trait HasRelationships
 {
-    use BelongsToMany;
+    use StatusMany, StatusOne;
 }

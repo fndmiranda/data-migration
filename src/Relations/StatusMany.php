@@ -6,18 +6,19 @@ use Illuminate\Support\Arr;
 use Fndmiranda\DataMigrate\DataMigrate;
 use Illuminate\Support\Collection;
 
-trait BelongsToMany
+trait StatusMany
 {
     /**
-     * Set the data migration for the relation many-to-many.
+     * Set the status of data migration for the relation with many.
      *
      * @param array $values
      * @param array|Collection $options
      * @param string $relation
      * @return array
      */
-    public function belongsToMany($values, $options, $relation)
+    public function statusMany($values, $options, $relation)
     {
+        dump($values);
         $options = $options instanceof Collection ? $options : Collection::make($options);
         $relations = data_get($options, 'relations', []);
         $relation = Arr::first($relations, function ($value) use ($relation) {
@@ -91,6 +92,21 @@ trait BelongsToMany
                         }
                     }
                 }
+
+                $identifiers = collect($values['data'][$relation['relation']])->map(function ($item) use ($relation) {
+                    return $item['data'][$relation['identifier']];
+                });
+
+                $removes = $this->model
+                    ->where($options['identifier'], '=', $values['data'][$options['identifier']])
+                    ->first()
+                    ->{$relation['relation']}()
+                    ->whereNotIn($relation['identifier'], $identifiers)->get();
+
+                foreach ($removes as $remove) {
+                    $values['data'][$relation['relation']][] = ['data' => $remove->toArray(), 'status' => DataMigrate::DELETE];
+                }
+
                 break;
         }
 
