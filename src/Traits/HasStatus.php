@@ -10,6 +10,8 @@ use Fndmiranda\DataMigrate\DataMigrate;
 
 trait HasStatus
 {
+    use HasRelationships;
+
     /**
      * The model associated with the data migrate.
      *
@@ -69,28 +71,42 @@ trait HasStatus
             $collection->push(['data' => $remove->toArray(), 'status' => DataMigrate::DELETE]);
         }
 
-        $this->relations($collection, $options);
+        $collectionWithRelationsStatus = $this->withRelationsStatus($collection, $options);
 
-        return $collection;
+        $collectionWithRelationsStatus->dump();
+
+        return $collectionWithRelationsStatus;
     }
 
-    private function relations(Collection $collection, Collection $options)
+    /**
+     * Set the relations for the data migrate.
+     *
+     * @param Collection $dataMigrate
+     * @param Collection $options
+     * @return Collection
+     */
+    private function withRelationsStatus(Collection $dataMigrate, Collection $options)
     {
         $relations = data_get($options, 'relations', []);
+        $collectionWithRelationStatus = collect();
 
-        foreach ($collection as $item) {
+        foreach ($dataMigrate as $item) {
             foreach ($relations as $relation) {
                 if (Arr::has($item['data'], $relation['relation'])) {
-                    $this->{$relation['type']}($item, $options, $relation['relation']);
+                    switch ($relation['type']) {
+                        case 'belongsToMany':
+                            $item = $this->belongsToMany($item, $options, $relation['relation']);
+                            break;
+                        case 'hasMany':
+                            $item = $this->belongsToMany($item, $options, $relation['relation']);
+                            break;
+                    }
                 }
             }
-        }
-    }
 
-    private function belongsToMany($values, $options, $relation)
-    {
-        dump($values);
-        dump($options);
-        dump($relation);
+            $collectionWithRelationStatus->push($item);
+        }
+
+        return $collectionWithRelationStatus;
     }
 }
