@@ -18,7 +18,6 @@ trait StatusMany
      */
     public function statusMany($values, $options, $relation)
     {
-        dump($values);
         $options = $options instanceof Collection ? $options : Collection::make($options);
         $relations = data_get($options, 'relations', []);
         $relation = Arr::first($relations, function ($value) use ($relation) {

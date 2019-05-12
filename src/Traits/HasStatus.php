@@ -73,7 +73,7 @@ trait HasStatus
 
         $collectionWithRelationsStatus = $this->withRelationsStatus($collection, $options);
 
-        $collectionWithRelationsStatus->dump();
+//        $collectionWithRelationsStatus->dump();
 
         return $collectionWithRelationsStatus;
     }
@@ -94,16 +94,16 @@ trait HasStatus
             foreach ($relations as $relation) {
                 if (Arr::has($item['data'], $relation['relation'])) {
                     switch ($relation['type']) {
-                        case 'belongsToMany':
+                        case DataMigrate::BELONGS_TO_MANY:
                             $item = $this->statusMany($item, $options, $relation['relation']);
                             break;
-                        case 'hasMany':
+                        case DataMigrate::HAS_MANY:
                             $item = $this->statusMany($item, $options, $relation['relation']);
                             break;
-                        case 'hasOne':
+                        case DataMigrate::HAS_ONE:
                             $item = $this->statusOne($item, $options, $relation['relation']);
                             break;
-                        case 'belongsTo':
+                        case DataMigrate::BELONGS_TO:
                             $item = $this->statusOne($item, $options, $relation['relation']);
                             break;
                     }
