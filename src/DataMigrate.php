@@ -52,20 +52,6 @@ class DataMigrate
     const BELONGS_TO_MANY = 'belongsToMany';
 
     /**
-     * Constant representing the relation one-to-one.
-     *
-     * @var string
-     */
-    const HAS_ONE = 'hasOne';
-
-    /**
-     * Constant representing the relation one-to-many.
-     *
-     * @var string
-     */
-    const HAS_MANY = 'hasMany';
-
-    /**
      * Constant representing the relation one-to-many inverse.
      *
      * @var string

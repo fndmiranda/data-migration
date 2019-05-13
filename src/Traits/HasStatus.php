@@ -32,7 +32,7 @@ trait HasStatus
         $data = $dataMigrate->data() instanceof Collection ? $dataMigrate->data() : Collection::make($dataMigrate->data());
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $collection = collect();
-        $relations = data_get($options, 'relations', []);
+        $relations = Arr::get($options, 'relations', []);
 
         foreach ($data->unique($options['identifier']) as $item) {
             if (!(bool) $this->model->where($options['identifier'], '=', $item[$options['identifier']])->count()) {
@@ -87,7 +87,7 @@ trait HasStatus
      */
     private function withRelationsStatus(Collection $dataMigrate, Collection $options)
     {
-        $relations = data_get($options, 'relations', []);
+        $relations = Arr::get($options, 'relations', []);
         $dataMigrateWithRelationStatus = collect();
 
         foreach ($dataMigrate as $item) {
@@ -96,12 +96,6 @@ trait HasStatus
                     switch ($relation['type']) {
                         case DataMigrate::BELONGS_TO_MANY:
                             $item = $this->statusMany($item, $options, $relation['relation']);
-                            break;
-                        case DataMigrate::HAS_MANY:
-                            $item = $this->statusMany($item, $options, $relation['relation']);
-                            break;
-                        case DataMigrate::HAS_ONE:
-                            $item = $this->statusOne($item, $options, $relation['relation']);
                             break;
                         case DataMigrate::BELONGS_TO:
                             $item = $this->statusOne($item, $options, $relation['relation']);
