@@ -1,9 +1,9 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Relations;
+namespace Fndmiranda\DataMigration\Relations;
 
 use Illuminate\Support\Arr;
-use Fndmiranda\DataMigrate\DataMigrate;
+use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Collection;
 
 trait StatusOne
@@ -31,16 +31,16 @@ trait StatusOne
             $ownerKey = $this->model->{$relation['relation']}()->getOwnerKey();
             $foreignKey = $this->model->{$relation['relation']}()->getForeignKey();
             $values['data'][$foreignKey] = $relationData->{$ownerKey};
-            $status = DataMigrate::OK;
+            $status = DataMigration::OK;
 
-            if ($values['status'] == DataMigrate::OK) {
+            if ($values['status'] == DataMigration::OK) {
                 $parent = $this->model->where($options['identifier'], '=', $values['data'][$options['identifier']])->first();
                 if ($parent->{$foreignKey} != $relationData->{$ownerKey}) {
-                    $values['status'] = DataMigrate::UPDATE;
+                    $values['status'] = DataMigration::UPDATE;
                 }
             }
         } else {
-            $status = DataMigrate::NOT_FOUND;
+            $status = DataMigration::NOT_FOUND;
         }
 
         $values['data'][$relation['relation']] = [

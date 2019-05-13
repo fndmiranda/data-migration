@@ -1,9 +1,9 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Traits;
+namespace Fndmiranda\DataMigration\Traits;
 
-use Fndmiranda\DataMigrate\Relations\StatusMany;
-use Fndmiranda\DataMigrate\Relations\StatusOne;
+use Fndmiranda\DataMigration\Relations\StatusMany;
+use Fndmiranda\DataMigration\Relations\StatusOne;
 
 trait HasRelationships
 {

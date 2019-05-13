@@ -1,12 +1,12 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Traits;
+namespace Fndmiranda\DataMigration\Traits;
 
-use Fndmiranda\DataMigrate\Contracts\DataMigrate as ContractDataMigrate;
+use Fndmiranda\DataMigration\Contracts\DataMigration as ContractDataMigration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Fndmiranda\DataMigrate\DataMigrate;
+use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Facades\DB;
 
 trait HasMigrate
@@ -23,18 +23,18 @@ trait HasMigrate
     /**
      * Run the data migrations.
      *
-     * @param ContractDataMigrate $dataMigrate
+     * @param ContractDataMigration $dataMigrate
      * @return Collection
      */
     public function migrate($dataMigrate)
     {
-        $dataMigrate = $dataMigrate instanceof ContractDataMigrate ? $dataMigrate : app($dataMigrate);
+        $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         $collection = collect();
 
         DB::transaction(function () use ($dataMigrate, $collection) {
             dump($this->status($dataMigrate));
             $creates = $this->status($dataMigrate)->filter(function ($value) {
-                return $value['status'] == DataMigrate::CREATE;
+                return $value['status'] == DataMigration::CREATE;
             });
 
             foreach ($creates as $item) {

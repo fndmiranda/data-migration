@@ -16,12 +16,12 @@
     },
     "autoload": {
       "psr-4": {
-        "Fndmiranda\\DataMigrate\\": "src/"
+        "Fndmiranda\\DataMigration\\": "src/"
       }
     },
     "autoload-dev": {
       "psr-4": {
-        "Fndmiranda\\DataMigrate\\Tests\\": "tests/"
+        "Fndmiranda\\DataMigration\\Tests\\": "tests/"
       }
     },
     "minimum-stability": "dev",

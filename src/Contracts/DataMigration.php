@@ -1,11 +1,11 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Contracts;
+namespace Fndmiranda\DataMigration\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-interface DataMigrate
+interface DataMigration
 {
     /**
      * Get the model being used by the data-migrate.

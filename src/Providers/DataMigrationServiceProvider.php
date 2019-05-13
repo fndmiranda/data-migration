@@ -1,13 +1,13 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Providers;
+namespace Fndmiranda\DataMigration\Providers;
 
-use Fndmiranda\DataMigrate\Console\StatusCommand;
-use Fndmiranda\DataMigrate\DataMigrate;
+use Fndmiranda\DataMigration\Console\StatusCommand;
+use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
-class MigrateServiceProvider extends ServiceProvider
+class DataMigrationServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
@@ -16,7 +16,7 @@ class MigrateServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        App::bind('data-migrate', DataMigrate::class);
+        App::bind('data-migration', DataMigration::class);
 
         $this->commands([
             StatusCommand::class,

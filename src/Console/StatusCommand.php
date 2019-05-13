@@ -1,6 +1,6 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Console;
+namespace Fndmiranda\DataMigration\Console;
 
 use Illuminate\Console\Command;
 
@@ -11,7 +11,7 @@ class StatusCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'data-migrate:status';
+    protected $signature = 'data-migration:status';
 
     /**
      * The console command description.

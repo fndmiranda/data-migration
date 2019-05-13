@@ -1,11 +1,11 @@
 <?php
 
-namespace Fndmiranda\DataMigrate;
+namespace Fndmiranda\DataMigration;
 
-use Fndmiranda\DataMigrate\Traits\HasMigrate;
-use Fndmiranda\DataMigrate\Traits\HasStatus;
+use Fndmiranda\DataMigration\Traits\HasMigrate;
+use Fndmiranda\DataMigration\Traits\HasStatus;
 
-class DataMigrate
+class DataMigration
 {
     use HasStatus, HasMigrate;
 

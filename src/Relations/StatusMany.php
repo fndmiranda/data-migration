@@ -1,9 +1,9 @@
 <?php
 
-namespace Fndmiranda\DataMigrate\Relations;
+namespace Fndmiranda\DataMigration\Relations;
 
 use Illuminate\Support\Arr;
-use Fndmiranda\DataMigrate\DataMigrate;
+use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Collection;
 
 trait StatusMany
@@ -25,10 +25,10 @@ trait StatusMany
         });
 
         switch ($values['status']) {
-            case DataMigrate::CREATE:
+            case DataMigration::CREATE:
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
                     $hasItem = $this->hasRelationItem($item, $relation);
-                    $status = $hasItem ? DataMigrate::CREATE : DataMigrate::NOT_FOUND;
+                    $status = $hasItem ? DataMigration::CREATE : DataMigration::NOT_FOUND;
 
                     $values['data'][$relation['relation']][$key] = [
                         'data' => $item,
@@ -36,8 +36,8 @@ trait StatusMany
                     ];
                 }
                 break;
-            case DataMigrate::OK:
-            case DataMigrate::UPDATE:
+            case DataMigration::OK:
+            case DataMigration::UPDATE:
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
                     $hasItem = $this->hasRelationItem($item, $relation);
 
@@ -52,7 +52,7 @@ trait StatusMany
                         if (!$count) {
                             $values['data'][$relation['relation']][$key] = [
                                 'data' => $item,
-                                'status' => DataMigrate::CREATE,
+                                'status' => DataMigration::CREATE,
                             ];
                         } else {
                             $update = false;
@@ -87,19 +87,19 @@ trait StatusMany
                             if ($update) {
                                 $values['data'][$relation['relation']][$key] = [
                                     'data' => $item,
-                                    'status' => DataMigrate::UPDATE,
+                                    'status' => DataMigration::UPDATE,
                                 ];
                             } else {
                                 $values['data'][$relation['relation']][$key] = [
                                     'data' => $item,
-                                    'status' => DataMigrate::OK,
+                                    'status' => DataMigration::OK,
                                 ];
                             }
                         }
                     } else {
                         $values['data'][$relation['relation']][$key] = [
                             'data' => $item,
-                            'status' => DataMigrate::NOT_FOUND,
+                            'status' => DataMigration::NOT_FOUND,
                         ];
                     }
                 }
@@ -115,7 +115,7 @@ trait StatusMany
                     ->whereNotIn($relation['identifier'], $identifiers)->get();
 
                 foreach ($removes as $remove) {
-                    $values['data'][$relation['relation']][] = ['data' => $remove->toArray(), 'status' => DataMigrate::DELETE];
+                    $values['data'][$relation['relation']][] = ['data' => $remove->toArray(), 'status' => DataMigration::DELETE];
                 }
 
                 break;
