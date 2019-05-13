@@ -4,7 +4,7 @@ namespace Fndmiranda\DataMigration\Console;
 
 use Illuminate\Console\Command;
 
-class StatusCommand extends Command
+class DataMigrationStatusCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -27,6 +27,6 @@ class StatusCommand extends Command
      */
     public function handle()
     {
-        dump('StatusCommand');
+        dump('DataMigrationStatus');
     }
 }

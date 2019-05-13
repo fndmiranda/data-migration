@@ -2,7 +2,8 @@
 
 namespace Fndmiranda\DataMigration\Providers;
 
-use Fndmiranda\DataMigration\Console\StatusCommand;
+use Fndmiranda\DataMigration\Console\DataMigrationMakeCommand;
+use Fndmiranda\DataMigration\Console\DataMigrationStatusCommand;
 use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
@@ -19,7 +20,8 @@ class DataMigrationServiceProvider extends ServiceProvider
         App::bind('data-migration', DataMigration::class);
 
         $this->commands([
-            StatusCommand::class,
+            DataMigrationMakeCommand::class,
+            DataMigrationStatusCommand::class,
         ]);
     }
 }
