@@ -27,7 +27,7 @@ trait StatusMany
         switch ($values['status']) {
             case DataMigration::CREATE:
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
-                    $hasItem = $this->hasRelationItem($item, $relation);
+                    $hasItem = $this->hasRelationManyItem($item, $options, $relation);
                     $status = $hasItem ? DataMigration::CREATE : DataMigration::NOT_FOUND;
 
                     $values['data'][$relation['relation']][$key] = [
@@ -39,7 +39,7 @@ trait StatusMany
             case DataMigration::OK:
             case DataMigration::UPDATE:
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
-                    $hasItem = $this->hasRelationItem($item, $relation);
+                    $hasItem = $this->hasRelationManyItem($item, $options, $relation);
 
                     if ($hasItem) {
                         $count = (bool)$this->model
@@ -127,14 +127,26 @@ trait StatusMany
     /**
      * Check if has item of the relation.
      *
-     * @param $item $values
+     * @param array $item
+     * @param array $options
      * @param string $relation
      * @return boolean
      */
-    private function hasRelationItem($item, $relation)
+    private function hasRelationManyItem($item, $options, $relation)
     {
         $relationModel = $this->model->{$relation['relation']}()->getModel();
         $relationData = $relationModel->where($relation['identifier'], '=', $item[$relation['identifier']])->first();
+
+        if ($this->model->getTable() == $relationModel->getTable() && $relationData) {
+            if ($options['identifier'] == $relation['identifier']) {
+                $inRemoves = (bool) $this->data->filter(function ($value) use ($item, $relation) {
+                    return $value['data'][$relation['identifier']] == $item[$relation['identifier']] && $value['status'] == DataMigration::DELETE;
+                })->count();
+
+                $relationData = !$inRemoves;
+            }
+        }
+
         return (bool) $relationData;
     }
 }

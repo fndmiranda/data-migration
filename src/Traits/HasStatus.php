@@ -20,6 +20,13 @@ trait HasStatus
     private $model;
 
     /**
+     * The data of the data migration.
+     *
+     * @var Collection
+     */
+    private $data;
+
+    /**
      * Show the status of each data.
      *
      * @param ContractDataMigration $dataMigrate
@@ -29,14 +36,14 @@ trait HasStatus
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         $this->model = app($dataMigrate->model());
-        $data = $dataMigrate->data() instanceof Collection ? $dataMigrate->data() : Collection::make($dataMigrate->data());
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
-        $collection = collect();
         $relations = Arr::get($options, 'relations', []);
+        $data = $dataMigrate->data() instanceof Collection ? $dataMigrate->data() : Collection::make($dataMigrate->data());
+        $this->data = $data->unique($options['identifier']);
 
-        foreach ($data->unique($options['identifier']) as $item) {
+        foreach ($this->data as $key => $item) {
             if (!(bool) $this->model->where($options['identifier'], '=', $item[$options['identifier']])->count()) {
-                $collection->push(['data' => $item, 'status' => DataMigration::CREATE]);
+                $this->data->put($key, ['data' => $item, 'status' => DataMigration::CREATE]);
             } else {
                 $keys = array_keys($item);
                 $clauses = Arr::where($keys, function ($value) use ($options, $relations) {
@@ -54,43 +61,39 @@ trait HasStatus
                 })->where($options['identifier'], '=', $item[$options['identifier']])->count();
 
                 if ($update) {
-                    $collection->push(['data' => $item, 'status' => DataMigration::UPDATE]);
+                    $this->data->put($key, ['data' => $item, 'status' => DataMigration::UPDATE]);
                 } else {
-                    $collection->push(['data' => $item, 'status' => DataMigration::OK]);
+                    $this->data->put($key, ['data' => $item, 'status' => DataMigration::OK]);
                 }
             }
         }
 
-        $identifiers = $collection->map(function ($item) use ($options) {
+        $identifiers = $this->data->map(function ($item) use ($options) {
             return $item['data'][$options['identifier']];
         });
 
         $removes = $this->model->whereNotIn($options['identifier'], $identifiers)->get();
 
         foreach ($removes as $remove) {
-            $collection->push(['data' => $remove->toArray(), 'status' => DataMigration::DELETE]);
+            $this->data->push(['data' => $remove->toArray(), 'status' => DataMigration::DELETE]);
         }
 
-        $collectionWithRelationsStatus = $this->withRelationsStatus($collection, $options);
+        $this->withRelationsStatus($options);
 
-//        $collectionWithRelationsStatus->dump();
-
-        return $collectionWithRelationsStatus;
+        return $this->data;
     }
 
     /**
      * Set the relations for the data migrate.
      *
-     * @param Collection $dataMigrate
      * @param Collection $options
-     * @return Collection
+     * @return $this
      */
-    private function withRelationsStatus(Collection $dataMigrate, Collection $options)
+    private function withRelationsStatus(Collection $options)
     {
         $relations = Arr::get($options, 'relations', []);
-        $dataMigrateWithRelationStatus = collect();
 
-        foreach ($dataMigrate as $item) {
+        foreach ($this->data as $key => $item) {
             foreach ($relations as $relation) {
                 if (Arr::has($item['data'], $relation['relation'])) {
                     switch ($relation['type']) {
@@ -104,9 +107,9 @@ trait HasStatus
                 }
             }
 
-            $dataMigrateWithRelationStatus->push($item);
+            $this->data->put($key, $item);
         }
 
-        return $dataMigrateWithRelationStatus;
+        return $this;
     }
 }

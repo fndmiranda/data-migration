@@ -27,11 +27,23 @@ trait StatusOne
         $relationModel = $this->model->{$relation['relation']}()->getModel();
         $relationData = $relationModel->where($relation['identifier'], '=', $values['data'][$relation['relation']][$relation['identifier']])->first();
 
-        if ($relationData) {
+        $inRemoves = false;
+        if ($this->model->getTable() == $relationModel->getTable()) {
+            if ($options['identifier'] == $relation['identifier']) {
+                $inRemoves = (bool) $this->data->filter(function ($value) use ($values, $relation, $options) {
+                    return $value['data'][$relation['identifier']] ==
+                        $values['data'][$relation['relation']][$relation['identifier']] &&
+                        $value['status'] == DataMigration::DELETE;
+                })->count();
+            }
+        }
+
+        if ($relationData && !$inRemoves) {
             $ownerKey = $this->model->{$relation['relation']}()->getOwnerKey();
             $foreignKey = $this->model->{$relation['relation']}()->getForeignKey();
             $values['data'][$foreignKey] = $relationData->{$ownerKey};
             $status = DataMigration::OK;
+
 
             if ($values['status'] == DataMigration::OK) {
                 $parent = $this->model->where($options['identifier'], '=', $values['data'][$options['identifier']])->first();
