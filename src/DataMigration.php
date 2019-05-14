@@ -2,12 +2,13 @@
 
 namespace Fndmiranda\DataMigration;
 
+use Fndmiranda\DataMigration\Traits\HasDiff;
 use Fndmiranda\DataMigration\Traits\HasMigrate;
 use Fndmiranda\DataMigration\Traits\HasStatus;
 
 class DataMigration
 {
-    use HasStatus, HasMigrate;
+    use HasStatus, HasMigrate, HasDiff;
 
     /**
      * Constant representing an ok status.
