@@ -21,23 +21,18 @@ trait HasMigrate
     {
         $collection = collect();
 
-        return $this->status($dataMigrate)->filter(function ($value) {
-            return $value['status'] == DataMigration::CREATE;
-        });
+        DB::transaction(function () use ($dataMigrate, $collection) {
+            $creates =  $this->status($dataMigrate)->filter(function ($value) {
+                return $value['status'] == DataMigration::CREATE;
+            });
 
-//        DB::transaction(function () use ($dataMigrate, $collection) {
-////            dump($this->status($dataMigrate));
-//            return $this->status($dataMigrate)->filter(function ($value) {
-//                return $value['status'] == DataMigration::CREATE;
-//            });
+            foreach ($creates as $item) {
+                dump($item);
+//                $entity = $this->model->create($item['data']);
+//                $collection->push($entity->toArray());
+            }
+        });
 //
-//            foreach ($creates as $item) {
-////                dump($item['data']);
-////                $entity = $this->model->create($item['data']);
-////                $collection->push($entity->toArray());
-//            }
-//        });
-//
-//        return $collection;
+        return $collection;
     }
 }
