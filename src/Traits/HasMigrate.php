@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasMigrate
 {
@@ -16,13 +17,14 @@ trait HasMigrate
      * Run the data migrations.
      *
      * @param ContractDataMigration $dataMigrate
+     * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function migrate($dataMigrate)
+    public function migrate($dataMigrate, $progressBar = null)
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         /* @var $status Collection */
-        $status = $this->status($dataMigrate);
+        $status = $this->status($dataMigrate, $progressBar);
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $relations = Arr::get($options, 'relations', []);
 
