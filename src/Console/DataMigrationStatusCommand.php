@@ -32,7 +32,12 @@ class DataMigrationStatusCommand extends DataMigrationCommand
         $this->getOutput()->writeln('<comment>Calculating status...</comment>');
         $data = DataMigration::status($this->getMigration())->toArray();
         $options = $this->getMigration()->options();
+        $rows = $this->getRows($data, $options);
 
-        $this->table($this->getHeaders(), $this->getRows($data, $options));
+        if (count($rows)) {
+            $this->table($this->getHeaders(), $rows);
+        } else {
+            $this->info('Nothing to do.');
+        }
     }
 }
