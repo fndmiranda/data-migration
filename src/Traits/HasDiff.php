@@ -6,6 +6,7 @@ use Fndmiranda\DataMigration\Contracts\DataMigration as ContractDataMigration;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Fndmiranda\DataMigration\DataMigration;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasDiff
 {
@@ -15,12 +16,13 @@ trait HasDiff
      * Show changes to the data migrations.
      *
      * @param ContractDataMigration $dataMigrate
+     * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function diff($dataMigrate)
+    public function diff($dataMigrate, $progressBar = null)
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
-        $status = $this->status($dataMigrate)->toArray();
+        $status = $this->status($dataMigrate, $progressBar)->toArray();
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $relations = Arr::get($options, 'relations', []);
         $status_no_changes = [DataMigration::OK, DataMigration::NOT_FOUND];

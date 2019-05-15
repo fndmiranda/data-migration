@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Fndmiranda\DataMigration\DataMigration;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasStatus
 {
@@ -37,11 +38,11 @@ trait HasStatus
      * Show the status of each data.
      *
      * @param ContractDataMigration $dataMigrate
+     * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function status($dataMigrate)
+    public function status($dataMigrate, $progressBar = null)
     {
-        sleep(2);
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         $this->model = app($dataMigrate->model());
         $this->options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
@@ -49,7 +50,18 @@ trait HasStatus
         $data = $dataMigrate->data() instanceof Collection ? $dataMigrate->data() : Collection::make($dataMigrate->data());
         $this->data = $data->unique($this->options['identifier']);
 
+        $identifiers = $this->data->map(function ($item) {
+            return $item[$this->options['identifier']];
+        });
+
+        $removes = $this->model->whereNotIn($this->options['identifier'], $identifiers)->get();
+
+        if ($progressBar) {
+            $progressBar->setMaxSteps(count($this->data) + count($removes));
+        }
+
         foreach ($this->data as $key => $item) {
+            sleep(1);
             if (!(bool) $this->model->where($this->options['identifier'], '=', $item[$this->options['identifier']])->count()) {
                 $this->data->put($key, ['data' => $item, 'status' => DataMigration::CREATE]);
             } else {
@@ -74,13 +86,11 @@ trait HasStatus
                     $this->data->put($key, ['data' => $item, 'status' => DataMigration::OK]);
                 }
             }
+
+            if ($progressBar) {
+                $progressBar->advance();
+            }
         }
-
-        $identifiers = $this->data->map(function ($item) {
-            return $item['data'][$this->options['identifier']];
-        });
-
-        $removes = $this->model->whereNotIn($this->options['identifier'], $identifiers)->get();
 
         foreach ($removes as $remove) {
             $this->data->push(['data' => $remove->toArray(), 'status' => DataMigration::DELETE]);
