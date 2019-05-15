@@ -61,7 +61,6 @@ trait HasStatus
         }
 
         foreach ($this->data as $key => $item) {
-            sleep(1);
             if (!(bool) $this->model->where($this->options['identifier'], '=', $item[$this->options['identifier']])->count()) {
                 $this->data->put($key, ['data' => $item, 'status' => DataMigration::CREATE]);
             } else {

@@ -2,7 +2,6 @@
 
 namespace Fndmiranda\DataMigration\Console;
 
-use Fndmiranda\DataMigration\Facades\DataMigration as FacadeDataMigration;
 use Fndmiranda\DataMigration\Facades\DataMigration;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Helper\TableCell;
