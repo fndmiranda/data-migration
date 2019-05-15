@@ -41,6 +41,7 @@ trait HasStatus
      */
     public function status($dataMigrate)
     {
+        sleep(2);
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         $this->model = app($dataMigrate->model());
         $this->options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());

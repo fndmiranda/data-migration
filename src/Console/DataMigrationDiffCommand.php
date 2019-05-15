@@ -2,23 +2,23 @@
 
 namespace Fndmiranda\DataMigration\Console;
 
-use Fndmiranda\DataMigration\Facades\DataMigration;
+use Fndmiranda\DataMigration\Facades\DataMigration as FacadeDataMigration;
 
-class DataMigrationStatusCommand extends DataMigrationCommand
+class DataMigrationDiffCommand extends DataMigrationCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'data-migration:status {migration}';
+    protected $signature = 'data-migration:diff {migration}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Show the status of each data';
+    protected $description = 'Show diff of each data';
 
     /**
      * Execute the console command.
@@ -29,8 +29,8 @@ class DataMigrationStatusCommand extends DataMigrationCommand
     {
         $this->setMigration($this->argument('migration'));
 
-        $this->getOutput()->writeln('<comment>Calculating status...</comment>');
-        $data = DataMigration::status($this->getMigration())->toArray();
+        $this->getOutput()->writeln('<comment>Calculating diff...</comment>');
+        $data = FacadeDataMigration::diff($this->getMigration())->toArray();
         $options = $this->getMigration()->options();
 
         $this->table($this->getHeaders(), $this->getRows($data, $options));
