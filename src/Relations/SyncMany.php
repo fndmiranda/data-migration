@@ -26,9 +26,6 @@ trait SyncMany
         $foreignPivotKeyName = $this->model->{$relation['relation']}()->getForeignPivotKeyName();
         $relatedPivotKeyName = $this->model->{$relation['relation']}()->getRelatedPivotKeyName();
 
-//        $ownerKey = $this->model->{$relation['relation']}()->getOwnerKey();
-//        $foreignKey = $this->model->{$relation['relation']}()->getForeignKey();
-
         foreach ($values['data'][$relation['relation']] as $key => $item) {
             switch ($item['status']) {
                 case DataMigration::CREATE:
