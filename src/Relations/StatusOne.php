@@ -42,10 +42,11 @@ trait StatusOne
             $values['data'][$foreignKey] = $relationData->{$ownerKey};
             $status = DataMigration::OK;
 
-
             if ($values['status'] == DataMigration::OK) {
                 $parent = $this->model->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])->first();
                 if ($parent->{$foreignKey} != $relationData->{$ownerKey}) {
+                    $relationsData = Arr::only($values, Arr::pluck($relations, 'relation'));
+                    $values['data'] = array_merge($parent->toArray(), $values['data'], $relationsData);
                     $values['status'] = DataMigration::UPDATE;
                 }
             }

@@ -4,7 +4,6 @@ namespace Fndmiranda\DataMigration\Relations;
 
 use Illuminate\Support\Arr;
 use Fndmiranda\DataMigration\DataMigration;
-use Illuminate\Support\Collection;
 
 trait StatusMany
 {
@@ -47,6 +46,7 @@ trait StatusMany
                             ->where($relation['identifier'], '=', $item[$relation['identifier']])
                             ->count();
 
+
                         if (!$count) {
                             $values['data'][$relation['relation']][$key] = [
                                 'data' => $item,
@@ -60,7 +60,7 @@ trait StatusMany
                             });
 
                             if (count($clauses)) {
-                                $update = (bool)$this->model
+                                $update = $this->model
                                     ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
                                     ->first()
                                     ->{$relation['relation']}()
@@ -78,13 +78,12 @@ trait StatusMany
                                                 $query->orWhere($clause, '!=', $item[$clause]);
                                             }
                                         }
-                                    })
-                                    ->count();
+                                    })->first();
                             }
 
                             if ($update) {
                                 $values['data'][$relation['relation']][$key] = [
-                                    'data' => $item,
+                                    'data' => array_merge($update->toArray(), $item),
                                     'status' => DataMigration::UPDATE,
                                 ];
                             } else {

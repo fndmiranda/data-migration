@@ -69,7 +69,7 @@ trait HasStatus
                     return $value != $this->options['identifier'] && !in_array($value, array_pluck($relations, 'relation'));
                 });
 
-                $update = (bool) $this->model->where(function ($query) use ($clauses, $item) {
+                $update = $this->model->where(function ($query) use ($clauses, $item) {
                     foreach (array_values($clauses) as $key => $clause) {
                         if (!$key) {
                             $query->where($clause, '!=', $item[$clause]);
@@ -77,10 +77,14 @@ trait HasStatus
                             $query->orWhere($clause, '!=', $item[$clause]);
                         }
                     }
-                })->where($this->options['identifier'], '=', $item[$this->options['identifier']])->count();
+                })->where($this->options['identifier'], '=', $item[$this->options['identifier']])->first();
 
                 if ($update) {
-                    $this->data->put($key, ['data' => $item, 'status' => DataMigration::UPDATE]);
+                    $relationsData = Arr::only($item, Arr::pluck($relations, 'relation'));
+                    $this->data->put($key, [
+                        'data' => array_merge($update->toArray(), $item, $relationsData),
+                        'status' => DataMigration::UPDATE,
+                    ]);
                 } else {
                     $this->data->put($key, ['data' => $item, 'status' => DataMigration::OK]);
                 }
