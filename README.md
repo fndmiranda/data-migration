@@ -169,13 +169,13 @@ public function options()
                'type' => 'belongsToMany',
                'relation' => 'dependencies',
                'identifier' => 'name',
-               'show' => ['name', 'title'],
+               'show' => ['name'],
            ],
            [
                'type' => 'belongsTo',
                'relation' => 'brand',
                'identifier' => 'name',
-               'show' => ['name', 'title'],
+               'show' => ['name'],
            ],
        ],
    ];
