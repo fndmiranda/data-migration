@@ -133,10 +133,10 @@ public function data()
        ['name' => 'product.products.index', 'title' => 'List products', 'group' => 'Product', 'brand' => ['name' => 'Brand test 1']],
        ['name' => 'product.products.show', 'title' => 'Show product', 'group' => 'Product'],
        ['name' => 'product.products.store', 'title' => 'Create product', 'group' => 'Product', 'dependencies' => [
-           'product.brands.index', 'product.categories.index',
+           ['name' => 'product.brands.index', 'pivot_example_1' => 'Pivot value 1'], ['name' => 'product.categories.index'],
        ], 'brand' => ['name' => 'Brand test 2']],
        ['name' => 'product.products.update', 'title' => 'Update product', 'group' => 'Product', 'dependencies' => [
-           'product.brands.index', 'product.categories.index',
+           ['name' => 'product.brands.index'], ['name' => 'product.categories.index', 'pivot_example_2' => 'Pivot value 2'],
        ]],
        ['name' => 'product.products.destroy', 'title' => 'Delete product', 'group' => 'Product'],
 
@@ -199,3 +199,57 @@ relation | Name of the relationship of the model. | string
 type | Model relationship type, `belongsToMany` or `belongsTo`. | string
 identifier | Column with unique value to validate status. | string
 show | Columns to show in commands output. | array
+
+## Run a data migration
+
+You can run a data migration via command or facade.
+
+Show the status of each an data migration with `data-migration:status` Artisan command:
+
+```terminal
+php artisan data-migration:status App\\DataMigrations\\PermissionDataMigration
+```
+
+Or with `DataMigration` facade:
+
+```php
+$status = DataMigration::status(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+Show changes between data migration and database with `data-migration:diff` Artisan command:
+
+```terminal
+php artisan data-migration:diff App\\DataMigrations\\PermissionDataMigration
+```
+
+Or with `DataMigration` facade:
+
+```php
+$diff = DataMigration::diff(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+Migrate the data from a data migration. Only necessary operations with status to create will be executed 
+with `data-migration:migrate` Artisan command:
+
+```terminal
+php artisan data-migration:migrate App\\DataMigrations\\PermissionDataMigration
+```
+
+Or with `DataMigration` facade:
+
+```php
+$migrated = DataMigration::migrate(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+Synchronize data from a data migration with the database. All necessary `create`, `update`, and `delete` operations will be 
+performed with `data-migration:sync` Artisan command:
+
+```terminal
+php artisan data-migration:sync App\\DataMigrations\\PermissionDataMigration
+```
+
+Or with `DataMigration` facade:
+
+```php
+$synchronized = DataMigration::sync(\App\DataMigrations\PermissionDataMigration::class);
+```
