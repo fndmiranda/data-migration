@@ -81,7 +81,6 @@ trait HasMigrate
                         return true;
                     }
                 }
-
             }
         }
 

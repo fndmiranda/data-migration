@@ -38,7 +38,8 @@ trait SyncMany
                         ->attach($data->id, Arr::except($item['data'], [$relation['identifier']]));
 
                     $values['data'][$relation['relation']][$key]['data'] = array_merge(
-                        $data->toArray(), $item['data']
+                        $data->toArray(),
+                        $item['data']
                     );
                     break;
                 case DataMigration::DELETE:
