@@ -43,8 +43,9 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
         $this->getOutput()->newLine();
 
         $rows = Arr::where($this->getRows(), function ($value) {
-            $value['status'] == '<fg=green>Create</fg=green>';
+            return $value['status'] == '<fg=green>Create</fg=green>';
         });
+
         $relationships = $this->getRelationships();
 
         if (!count($rows) && !count($relationships)) {
