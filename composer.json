@@ -27,6 +27,13 @@
         "Fndmiranda\\DataMigration\\": "src/"
       }
     },
+    "extra": {
+      "laravel": {
+        "providers": [
+          "Fndmiranda\\DataMigration\\DataMigrationServiceProvider"
+        ]
+      }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
