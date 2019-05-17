@@ -1,7 +1,8 @@
 # Data migrations from Laravel
 
-This package simplifies the migration of application data, allowing you to control for example the settings or a list of permissions for the database.
-
+This package simplifies the migration and synchronization of data between the application and the database, 
+allowing you to control for example settings or permissions lists. Provides resources to view the status and 
+changes not yet made, migrate and synchronize the data.
 
 ## Installation
 
@@ -60,7 +61,192 @@ class PermissionDataMigration implements DataMigration
 }
 ```
 
-### Model example
+#### Method model
+
+Method to specify the model bound to the data migration class.
+
+```php
+/**
+ * Get the model being used by the data migration.
+ *
+ * @return string
+ */
+public function model()
+{
+    return \App\Permission::class;
+}
+```
+
+#### Method data
+
+Method to specify the data to be migrated.
+
+```php
+/**
+ * Get the data being used by the data migration.
+ *
+ * @return mixed
+ */
+public function data()
+{
+    return [
+       ['name' => 'product.products.index', 'title' => 'List products', 'group' => 'Product'],
+       ['name' => 'product.products.show', 'title' => 'Show product', 'group' => 'Product'],
+       ['name' => 'product.products.store', 'title' => 'Create product', 'group' => 'Product'],
+       ['name' => 'product.products.update', 'title' => 'Update product', 'group' => 'Product'],
+       ['name' => 'product.products.destroy', 'title' => 'Delete product', 'group' => 'Product'],
+
+       ['name' => 'product.brands.index', 'title' => 'List brands', 'group' => 'Product'],
+       ['name' => 'product.brands.show', 'title' => 'Show brand', 'group' => 'Product'],
+       ['name' => 'product.brands.store', 'title' => 'Create brand', 'group' => 'Product'],
+       ['name' => 'product.brands.update', 'title' => 'Update brand', 'group' => 'Product'],
+       ['name' => 'product.brands.destroy', 'title' => 'Delete brand', 'group' => 'Product'],
+   ];
+}
+```
+
+#### Method options
+
+The options method to specify the parameters to be used in the migration.
+
+```php
+/**
+ * Get the data options being used by the data migration.
+ *
+ * @return mixed
+ */
+public function options()
+{
+    return [
+       'identifier' => 'name',
+       'show' => ['name', 'title'],
+   ];
+}
+```
+
+The following keys are available as options:
+
+Key | Description | Type
+--- | --- | ---
+identifier | Column with unique value to validate status. | string
+show | Columns to show in commands output. | array
+relations | Relationships options, see the usage with relationships. | array
+
+## Run a data migration
+
+You can run a data migration via command or facade.
+
+Show the status of each data with the database with `data-migration:status` Artisan command:
+
+```terminal
+php artisan data-migration:status App\\DataMigrations\\PermissionDataMigration
+```
+
+Output:
+
+```terminal
++--------------------------+------------------------+--------+
+| name                     | title                  | status |
++--------------------------+------------------------+--------+
+| product.products.index   | List products          | Create |
+| product.products.show    | Show product           | OK     |
+| product.products.store   | Create product updated | Update |
+| product.products.destroy | Delete product         | OK     |
+| product.brands.show      | Show brand             | Create |
+| product.brands.store     | Create brand updated   | Update |
+| product.brands.update    | Update brand           | OK     |
+| product.brands.destroy   | Delete brand           | OK     |
+| product.products.update  | Update product         | Delete |
+| product.brands.index     | List brands            | Delete |
++--------------------------+------------------------+--------+
+```
+
+Or with `DataMigration` facade:
+
+```php
+$status = DataMigration::status(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+Show changes between data migration and database with `data-migration:diff` Artisan command:
+
+```terminal
+php artisan data-migration:diff App\\DataMigrations\\PermissionDataMigration
+```
+
+Output:
+
+```terminal
++--------------------------+------------------------+--------+
+| name                     | title                  | status |
++--------------------------+------------------------+--------+
+| product.products.index   | List products          | Create |
+| product.products.store   | Create product updated | Update |
+| product.brands.show      | Show brand             | Create |
+| product.brands.store     | Create brand updated   | Update |
+| product.products.update  | Update product         | Delete |
+| product.brands.index     | List brands            | Delete |
++--------------------------+------------------------+--------+
+```
+
+Or with `DataMigration` facade:
+
+```php
+$diff = DataMigration::diff(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+Migrate data from a data migration to the database. Only necessary operations with status to create will be executed 
+with `data-migration:migrate` Artisan command:
+
+```terminal
+php artisan data-migration:migrate App\\DataMigrations\\PermissionDataMigration
+```
+
+Output:
+
+```terminal
++--------------------------+------------------------+--------+
+| name                     | title                  | status |
++--------------------------+------------------------+--------+
+| product.products.index   | List products          | Create |
+| product.brands.show      | Show brand             | Create |
++--------------------------+------------------------+--------+
+```
+
+Or with `DataMigration` facade:
+
+```php
+$migrated = DataMigration::migrate(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+Synchronize data from a data migration with the database. All necessary `create`, `update`, and `delete` operations will be 
+performed with `data-migration:sync` Artisan command:
+
+```terminal
+php artisan data-migration:sync App\\DataMigrations\\PermissionDataMigration
+```
+
+Output:
+
+```terminal
++--------------------------+------------------------+--------+
+| name                     | title                  | status |
++--------------------------+------------------------+--------+
+| product.products.index   | List products          | Create |
+| product.products.store   | Create product updated | Update |
+| product.brands.show      | Show brand             | Create |
+| product.brands.store     | Create brand updated   | Update |
+| product.products.update  | Update product         | Delete |
+| product.brands.index     | List brands            | Delete |
++--------------------------+------------------------+--------+
+```
+
+Or with `DataMigration` facade:
+
+```php
+$synchronized = DataMigration::sync(\App\DataMigrations\PermissionDataMigration::class);
+```
+
+## Usage with relationships
 
 Example of a permissions model with a relationship for dependencies of type belongsToMany with pivot_example_1 and 
 pivot_example_2, and a relationship for brand of type belongsTo to exemplify a data migration.
@@ -101,25 +287,9 @@ class Permission extends Model
 }
 ```
 
-#### model
+#### Method data with relationships
 
-The model method specifies the model bound to the data migration class.
-
-```php
-/**
- * Get the model being used by the data migration.
- *
- * @return string
- */
-public function model()
-{
-    return \App\Permission::class;
-}
-```
-
-#### data
-
-The data method specifies the data to be migrated.
+The data method to specify the data to be migrated with relationships.
 
 ```php
 /**
@@ -149,9 +319,9 @@ public function data()
 }
 ```
 
-#### options
+#### Method options with relationships
 
-The options method specifies the parameters to be used in the migration.
+The options method with relationships to specify the parameters to be used in the data migration.
 
 ```php
 /**
@@ -182,16 +352,7 @@ public function options()
 }
 ```
 
-The following keys are available as parameter:
-
-Key | Description | Type
---- | --- | ---
-identifier | Column with unique value to validate status. | string
-show | Columns to show in commands output. | array
-relations | Relationships, see the keys to relationships. | array
-
-
-The following keys are available as relationships parameter:
+The following keys are available as relationships options:
 
 Key | Description | Type
 --- | --- | ---
@@ -199,57 +360,3 @@ relation | Name of the relationship of the model. | string
 type | Model relationship type, `belongsToMany` or `belongsTo`. | string
 identifier | Column with unique value to validate status. | string
 show | Columns to show in commands output. | array
-
-## Run a data migration
-
-You can run a data migration via command or facade.
-
-Show the status of each data with the database with `data-migration:status` Artisan command:
-
-```terminal
-php artisan data-migration:status App\\DataMigrations\\PermissionDataMigration
-```
-
-Or with `DataMigration` facade:
-
-```php
-$status = DataMigration::status(\App\DataMigrations\PermissionDataMigration::class);
-```
-
-Show changes between data migration and database with `data-migration:diff` Artisan command:
-
-```terminal
-php artisan data-migration:diff App\\DataMigrations\\PermissionDataMigration
-```
-
-Or with `DataMigration` facade:
-
-```php
-$diff = DataMigration::diff(\App\DataMigrations\PermissionDataMigration::class);
-```
-
-Migrate data from a data migration to the database. Only necessary operations with status to create will be executed 
-with `data-migration:migrate` Artisan command:
-
-```terminal
-php artisan data-migration:migrate App\\DataMigrations\\PermissionDataMigration
-```
-
-Or with `DataMigration` facade:
-
-```php
-$migrated = DataMigration::migrate(\App\DataMigrations\PermissionDataMigration::class);
-```
-
-Synchronize data from a data migration with the database. All necessary `create`, `update`, and `delete` operations will be 
-performed with `data-migration:sync` Artisan command:
-
-```terminal
-php artisan data-migration:sync App\\DataMigrations\\PermissionDataMigration
-```
-
-Or with `DataMigration` facade:
-
-```php
-$synchronized = DataMigration::sync(\App\DataMigrations\PermissionDataMigration::class);
-```
