@@ -1,5 +1,5 @@
 {
-    "name": "fndmiranda/data-migrate",
+    "name": "fndmiranda/data-migration",
     "description": "Migrate data to the database",
     "keywords": [
       "laravel",
