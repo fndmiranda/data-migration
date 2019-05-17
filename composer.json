@@ -1,6 +1,14 @@
 {
     "name": "fndmiranda/data-migrate",
     "description": "Migrate data to database.",
+    "keywords": [
+      "laravel",
+      "migration",
+      "seed",
+      "data",
+      "database",
+      "eloquent"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -16,12 +24,12 @@
     },
     "autoload": {
       "psr-4": {
-        "Fndmiranda\\DataMigrate\\": "src/"
+        "Fndmiranda\\DataMigration\\": "src/"
       }
     },
     "autoload-dev": {
       "psr-4": {
-        "Fndmiranda\\DataMigrate\\Tests\\": "tests/"
+        "Fndmiranda\\DataMigration\\Tests\\": "tests/"
       }
     },
     "minimum-stability": "dev",
