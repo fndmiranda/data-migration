@@ -1,9 +1,8 @@
 <?php
 
-namespace Fndmiranda\DataMigration\Providers;
+namespace Fndmiranda\DataMigration;
 
 use Fndmiranda\DataMigration\Console;
-use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
