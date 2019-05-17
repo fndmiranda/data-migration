@@ -1,0 +1,38 @@
+<?php
+
+namespace DummyNamespace;
+
+use Fndmiranda\DataMigration\Contracts\DataMigration;
+
+class DummyClass implements DataMigration
+{
+    /**
+     * Get the model being used by the data migration.
+     *
+     * @return string
+     */
+    public function model()
+    {
+        //
+    }
+
+    /**
+     * Get the data being used by the data migration.
+     *
+     * @return mixed
+     */
+    public function data()
+    {
+        //
+    }
+
+    /**
+     * Get the data options being used by the data migration.
+     *
+     * @return mixed
+     */
+    public function options()
+    {
+        //
+    }
+}
