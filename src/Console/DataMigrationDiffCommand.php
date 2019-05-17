@@ -4,6 +4,7 @@ namespace Fndmiranda\DataMigration\Console;
 
 use Fndmiranda\DataMigration\Facades\DataMigration as FacadeDataMigration;
 use Fndmiranda\DataMigration\Facades\DataMigration;
+use Illuminate\Support\Arr;
 use Symfony\Component\Console\Helper\TableCell;
 
 class DataMigrationDiffCommand extends DataMigrationCommand
@@ -42,13 +43,18 @@ class DataMigrationDiffCommand extends DataMigrationCommand
         $progressBar->finish();
         $this->getOutput()->newLine();
 
-        $rows = $this->getRows();
+        $rows = Arr::where($this->getRows(), function ($value) {
+            return $value['status'] != '<fg=white>OK</fg=white>';
+        });
+
         $relationships = $this->getRelationships();
 
         if (!count($rows) && !count($relationships)) {
             $this->info('Nothing to diff.');
         } else {
-            $this->table($this->getHeaders($options['show']), $rows);
+            if (count($rows)) {
+                $this->table($this->getHeaders($options['show']), $rows);
+            }
 
             foreach ($this->getRelationships() as $relationship => $data) {
                 $headers = [
