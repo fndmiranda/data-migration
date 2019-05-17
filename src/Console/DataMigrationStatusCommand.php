@@ -19,7 +19,7 @@ class DataMigrationStatusCommand extends DataMigrationCommand
      *
      * @var string
      */
-    protected $description = 'Show the status of each data';
+    protected $description = 'Show the status of each data with the database';
 
     /**
      * Execute the console command.

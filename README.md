@@ -204,7 +204,7 @@ show | Columns to show in commands output. | array
 
 You can run a data migration via command or facade.
 
-Show the status of each an data migration with `data-migration:status` Artisan command:
+Show the status of each data with the database with `data-migration:status` Artisan command:
 
 ```terminal
 php artisan data-migration:status App\\DataMigrations\\PermissionDataMigration
@@ -228,7 +228,7 @@ Or with `DataMigration` facade:
 $diff = DataMigration::diff(\App\DataMigrations\PermissionDataMigration::class);
 ```
 
-Migrate the data from a data migration. Only necessary operations with status to create will be executed 
+Migrate data from a data migration to the database. Only necessary operations with status to create will be executed 
 with `data-migration:migrate` Artisan command:
 
 ```terminal

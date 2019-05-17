@@ -20,7 +20,7 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      *
      * @var string
      */
-    protected $description = 'Migrate of each data';
+    protected $description = 'Migrate data from a data migration to the database';
 
     /**
      * Execute the console command.
