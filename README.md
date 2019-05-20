@@ -360,3 +360,11 @@ relation | Name of the relationship of the model. | string
 type | Model relationship type, `belongsToMany` or `belongsTo`. | string
 identifier | Column with unique value to validate status. | string
 show | Columns to show in commands output. | array
+
+## Security
+
+If you discover any security related issues, please email fndmiranda@gmail.com instead of using the issue tracker.
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
