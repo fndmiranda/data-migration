@@ -3,6 +3,7 @@
 namespace Fndmiranda\DataMigration\Traits;
 
 use Fndmiranda\DataMigration\Contracts\DataMigration as ContractDataMigration;
+use Fndmiranda\DataMigration\Relations\StatusOne;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -11,8 +12,6 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasStatus
 {
-    use HasRelationships;
-
     /**
      * The model associated with the data migrate.
      *

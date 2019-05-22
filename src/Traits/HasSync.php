@@ -12,8 +12,6 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasSync
 {
-    use HasRelationships;
-
     /**
      * Synchronization changes to the data migrations.
      *

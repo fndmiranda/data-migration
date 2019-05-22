@@ -10,8 +10,6 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasDiff
 {
-    use HasRelationships;
-
     /**
      * Show changes to the data migrations.
      *
