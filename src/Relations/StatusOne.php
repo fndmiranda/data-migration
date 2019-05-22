@@ -37,14 +37,17 @@ trait StatusOne
         }
 
         if ($relationData && !$inRemoves) {
-            $ownerKey = $this->model->{$relation['relation']}()->getOwnerKey();
-            $foreignKey = $this->model->{$relation['relation']}()->getForeignKey();
-            $values['data'][$foreignKey] = $relationData->{$ownerKey};
+            $ref = $this->model->{$relation['relation']}();
+
+            $ownerKeyName = (float) app()->version() >= 5.8 ? $ref->getOwnerKeyName() : $ref->getOwnerKey();
+            $foreignKeyName = (float) app()->version() >= 5.8 ? $ref->getForeignKeyName() : $ref->getForeignKey();
+
+            $values['data'][$foreignKeyName] = $relationData->{$ownerKeyName};
             $status = DataMigration::OK;
 
             if ($values['status'] == DataMigration::OK) {
                 $parent = $this->model->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])->first();
-                if ($parent->{$foreignKey} != $relationData->{$ownerKey}) {
+                if ($parent->{$foreignKeyName} != $relationData->{$ownerKeyName}) {
                     $relationsData = Arr::only($values, Arr::pluck($relations, 'relation'));
                     $values['data'] = array_merge($parent->toArray(), $values['data'], $relationsData);
                     $values['status'] = DataMigration::UPDATE;
