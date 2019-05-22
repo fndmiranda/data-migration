@@ -2,14 +2,12 @@
 
 namespace Fndmiranda\DataMigration;
 
-use Fndmiranda\DataMigration\Traits\HasDiff;
-use Fndmiranda\DataMigration\Traits\HasMigrate;
-use Fndmiranda\DataMigration\Traits\HasStatus;
-use Fndmiranda\DataMigration\Traits\HasSync;
+use Fndmiranda\DataMigration\Traits\HasMethods;
+use Fndmiranda\DataMigration\Traits\HasRelationships;
 
 class DataMigration
 {
-    use HasStatus, HasMigrate, HasDiff, HasSync;
+    use HasMethods, HasRelationships;
 
     /**
      * Constant representing an ok status.
