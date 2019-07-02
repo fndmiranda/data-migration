@@ -212,6 +212,12 @@ Output:
 +--------------------------+------------------------+--------+
 ```
 
+Or use the `--all` option to migrate an entire namespace at once:
+
+```terminal
+php artisan data-migration:migrate App\\DataMigrations --all
+```
+
 Or with `DataMigration` facade:
 
 ```php
