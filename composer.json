@@ -20,7 +20,8 @@
     ],
     "require": {
       "php": ">=7.0.0",
-      "laravel/framework": "^5.5"
+      "laravel/framework": "^5.5",
+      "haydenpierce/class-finder": "^0.3.2"
     },
     "autoload": {
       "psr-4": {
