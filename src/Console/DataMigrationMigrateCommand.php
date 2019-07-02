@@ -29,7 +29,17 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      */
     public function handle()
     {
-        $this->setMigration($this->argument('migration'));
+        $this->runMigration($this->argument('migration'));
+    }
+
+    /**
+     * Runs a data migration
+     *
+     * @param string $migration which migration to run
+     */
+    protected function runMigration(string $migration)
+    {
+        $this->setMigration($migration);
 
         $this->getOutput()->writeln(sprintf('<comment>Calculating migrate to %s:</comment>', $this->getMigration()->model()));
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
