@@ -2,10 +2,13 @@
 
 namespace Fndmiranda\DataMigration\Console;
 
-use Fndmiranda\DataMigration\Contracts\DataMigration as ContractDataMigration;
+use Fndmiranda\DataMigration\Contracts\DataMigration as DataMigrationContract;
 use Fndmiranda\DataMigration\DataMigration;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use ReflectionClass;
+use Symfony\Component\Finder\Finder;
 
 abstract class DataMigrationCommand extends Command
 {
@@ -25,7 +28,7 @@ abstract class DataMigrationCommand extends Command
     /**
      * The migration instance.
      *
-     * @var ContractDataMigration
+     * @var DataMigrationContract
      */
     protected $migration;
 
@@ -46,7 +49,7 @@ abstract class DataMigrationCommand extends Command
     /**
      * Get a data migration instance.
      *
-     * @return ContractDataMigration
+     * @return DataMigrationContract
      */
     protected function getMigration()
     {
@@ -153,5 +156,32 @@ abstract class DataMigrationCommand extends Command
         $headers[] = 'status';
 
         return $headers;
+    }
+
+    /**
+     * Find data migrations.
+     *
+     * @param array $path Path to find data migrations
+     * @return mixed|Collection
+     */
+    protected function findMigrations(array $path = [])
+    {
+        $path = empty($path) ? app_path() : $path;
+        $finder = new Finder();
+
+        $finder->name('*.php')->notName('*.blade.php')->files()->in($path);
+
+        foreach ($finder as $file) {
+            require_once $file->getPathname();
+        }
+
+        return collect(get_declared_classes())
+            ->map(function ($class) {
+                return new ReflectionClass($class);
+            })
+            ->filter(function ($class) use ($path) {
+                return $class->isSubclassOf(DataMigrationContract::class);
+            })
+            ->values();
     }
 }

@@ -139,6 +139,18 @@ You can run a data migration via command or facade.
 Show the status of each data with the database with `data-migration:status` Artisan command:
 
 ```terminal
+php artisan data-migration:status
+```
+
+Specifying the paths to search for data migrations.
+
+```terminal
+php artisan data-migration:status --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
+Run `data-migration:status` only specific a data migration.
+
+```terminal
 php artisan data-migration:status App\\DataMigrations\\PermissionDataMigration
 ```
 
@@ -170,6 +182,18 @@ $status = DataMigration::status(\App\DataMigrations\PermissionDataMigration::cla
 Show changes between data migration and database with `data-migration:diff` Artisan command:
 
 ```terminal
+php artisan data-migration:diff
+```
+
+Specifying the paths to search for data migrations.
+
+```terminal
+php artisan data-migration:diff --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
+Run `data-migration:diff` only specific a data migration.
+
+```terminal
 php artisan data-migration:diff App\\DataMigrations\\PermissionDataMigration
 ```
 
@@ -198,6 +222,18 @@ Migrate data from a data migration to the database. Only necessary operations wi
 with `data-migration:migrate` Artisan command:
 
 ```terminal
+php artisan data-migration:migrate
+```
+
+Specifying the paths to search for data migrations.
+
+```terminal
+php artisan data-migration:migrate --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
+Run `data-migration:migrate` only specific a data migration.
+
+```terminal
 php artisan data-migration:migrate App\\DataMigrations\\PermissionDataMigration
 ```
 
@@ -220,6 +256,18 @@ $migrated = DataMigration::migrate(\App\DataMigrations\PermissionDataMigration::
 
 Synchronize data from a data migration with the database. All necessary `create`, `update`, and `delete` operations will be 
 performed with `data-migration:sync` Artisan command:
+
+```terminal
+php artisan data-migration:sync
+```
+
+Specifying the paths to search for data migrations.
+
+```terminal
+php artisan data-migration:sync --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
+Run `data-migration:sync` only specific a data migration.
 
 ```terminal
 php artisan data-migration:sync App\\DataMigrations\\PermissionDataMigration

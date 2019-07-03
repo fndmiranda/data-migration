@@ -12,7 +12,9 @@ class DataMigrationStatusCommand extends DataMigrationCommand
      *
      * @var string
      */
-    protected $signature = 'data-migration:status {migration}';
+    protected $signature = 'data-migration:status
+                            {migration? : The data migration to run}
+                            {--path=* : Path to find data migrations}';
 
     /**
      * The console command description.
@@ -28,7 +30,29 @@ class DataMigrationStatusCommand extends DataMigrationCommand
      */
     public function handle()
     {
-        $this->setMigration($this->argument('migration'));
+        if ($this->argument('migration')) {
+            $this->status($this->argument('migration'));
+        } else {
+            $collection = $this->findMigrations($this->option('path'));
+
+            if ($collection->count()) {
+                foreach ($collection as $class) {
+                    $this->status($class->getName());
+                }
+            } else {
+                $this->info('No data migration found.');
+            }
+        }
+    }
+
+    /**
+     * Status of a data migration.
+     *
+     * @param string $migration
+     */
+    protected function status(string $migration)
+    {
+        $this->setMigration($migration);
 
         $this->getOutput()->writeln(sprintf('<comment>Calculating to %s:</comment>', $this->getMigration()->model()));
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));

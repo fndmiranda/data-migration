@@ -1,6 +1,6 @@
 {
     "name": "fndmiranda/data-migration",
-    "description": "Migrate data to the database",
+    "description": "Synchronize and migrate data between the application and the database",
     "keywords": [
       "laravel",
       "migration",
