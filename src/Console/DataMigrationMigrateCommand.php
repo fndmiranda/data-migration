@@ -2,9 +2,7 @@
 
 namespace Fndmiranda\DataMigration\Console;
 
-use Fndmiranda\DataMigration\Contracts\DataMigration as DataMigrationContract;
 use Fndmiranda\DataMigration\Facades\DataMigration;
-use HaydenPierce\ClassFinder\ClassFinder;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Helper\TableCell;
 
@@ -15,7 +13,9 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      *
      * @var string
      */
-    protected $signature = 'data-migration:migrate {migration} {--all : Treats <migration> as a namespace and execute all data migrations in it}';
+    protected $signature = 'data-migration:migrate
+                            {migration? : The data migration to run}
+                            {--path=* : Path to find data migrations}';
 
     /**
      * The console command description.
@@ -31,33 +31,27 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      */
     public function handle()
     {
-        if ($this->option('all')) {
-            try {
-                $migrations = $this->listMigrations($this->argument('migration'));
-            } catch (\Exception $e) {
-                $this->error('Can\'t find namespace');
-                return -1;
-            }
+        if ($this->argument('migration')) {
+            $this->migrate($this->argument('migration'));
+        } else {
+            $collection = $this->findMigrations($this->option('path'));
 
-            if ($migrations) {
-                foreach ($migrations as $migration) {
-                    $this->runMigration($migration);
+            if ($collection->count()) {
+                foreach ($collection as $class) {
+                    $this->migrate($class->getName());
                 }
             } else {
-                $this->info('No migration found');
+                $this->info('No data migration found.');
             }
-
-        } else {
-            $this->runMigration($this->argument('migration'));
         }
     }
 
     /**
-     * Runs a data migration
+     * Migrate a data migration.
      *
-     * @param string $migration which migration to run
+     * @param string $migration
      */
-    protected function runMigration(string $migration)
+    protected function migrate(string $migration)
     {
         $this->setMigration($migration);
 
@@ -100,20 +94,5 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
                 }
             }
         }
-
-    }
-
-    /**
-     * Lists all data migrations in the given namespace
-     *
-     * @param string $namespace
-     * @return string[]
-     * @throws \Exception
-     */
-    protected function listMigrations(string $namespace): array
-    {
-        return array_filter(ClassFinder::getClassesInNamespace($namespace), function ($class) {
-            return in_array(DataMigrationContract::class, class_implements($class));
-        });
     }
 }

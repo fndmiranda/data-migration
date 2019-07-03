@@ -13,7 +13,9 @@ class DataMigrationSyncCommand extends DataMigrationCommand
      *
      * @var string
      */
-    protected $signature = 'data-migration:sync {migration}';
+    protected $signature = 'data-migration:sync
+                            {migration? : The data migration to run}
+                            {--path=* : Path to find data migrations}';
 
     /**
      * The console command description.
@@ -29,7 +31,29 @@ class DataMigrationSyncCommand extends DataMigrationCommand
      */
     public function handle()
     {
-        $this->setMigration($this->argument('migration'));
+        if ($this->argument('migration')) {
+            $this->sync($this->argument('migration'));
+        } else {
+            $collection = $this->findMigrations($this->option('path'));
+
+            if ($collection->count()) {
+                foreach ($collection as $class) {
+                    $this->sync($class->getName());
+                }
+            } else {
+                $this->info('No data migration found.');
+            }
+        }
+    }
+
+    /**
+     * Synchronize a data migration.
+     *
+     * @param string $migration
+     */
+    protected function sync(string $migration)
+    {
+        $this->setMigration($migration);
 
         $this->getOutput()->writeln(sprintf('<comment>Calculating synchronization to %s:</comment>', $this->getMigration()->model()));
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
