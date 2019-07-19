@@ -392,8 +392,6 @@ public function options()
            [
                'type' => 'belongsTo',
                'relation' => 'brand',
-               'identifier' => 'name',
-               'show' => ['name'],
            ],
        ],
    ];
@@ -406,8 +404,8 @@ Key | Description | Type
 --- | --- | ---
 relation | Name of the relationship of the model. | string
 type | Model relationship type, `belongsToMany` or `belongsTo`. | string
-identifier | Column with unique value to validate status. | string
-show | Columns to show in commands output. | array
+identifier | Column with unique value to validate status (only with `belongsToMany`). | string
+show | Columns to show in commands output (only with `belongsToMany`). | array
 
 ## Security
 

@@ -65,7 +65,7 @@ class DataMigrationStatusCommand extends DataMigrationCommand
         $progressBar->finish();
         $this->getOutput()->newLine();
 
-        $rows = $this->getRows();
+        $rows = $this->prepareRows($this->getRows());
         $relationships = $this->getRelationships();
 
         if (!count($rows) && !count($relationships)) {
@@ -82,5 +82,39 @@ class DataMigrationStatusCommand extends DataMigrationCommand
                 $this->table($headers, $data['rows']);
             }
         }
+    }
+
+    /**
+     * Prepare rows to show status.
+     *
+     * @param $rows
+     * @return \Illuminate\Support\Collection
+     */
+    private function prepareRows($rows)
+    {
+        $data = collect($rows)->map(function ($item, $key) {
+            $row = [];
+            foreach ($item as $column => $value) {
+                $row[$column] = $this->prepareValue($value);
+            }
+            return $row;
+        });
+
+        return $data;
+    }
+
+    /**
+     * Prepare value to show status.
+     *
+     * @param $value
+     * @return string
+     */
+    private function prepareValue($value)
+    {
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        return $value;
     }
 }
