@@ -62,11 +62,11 @@ trait StatusMany
 
                                 if (count($clauses)) {
                                     $update = $this->model
-                                        ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
+                                        ->where($this->model->getTable().'.'.$this->options['identifier'], '=', $values['data'][$this->options['identifier']])
                                         ->first()
                                         ->{$relation['relation']}()
-                                        ->where($relation['identifier'], '=', $item[$relation['identifier']])
-                                        ->where(function ($query) use ($relation, $item) {
+                                        ->where($ref->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
+                                        ->where(function ($query) use ($relation, $item, $ref) {
                                             $keys = array_keys($item);
                                             $clauses = Arr::where($keys, function ($value) use ($relation) {
                                                 return $value != $relation['identifier'];
@@ -74,9 +74,9 @@ trait StatusMany
 
                                             foreach (array_values($clauses) as $key => $clause) {
                                                 if (!$key) {
-                                                    $query->where($clause, '!=', $item[$clause]);
+                                                    $query->where($ref->getTable().'.'.$clause, '!=', $item[$clause]);
                                                 } else {
-                                                    $query->orWhere($clause, '!=', $item[$clause]);
+                                                    $query->orWhere($ref->getTable().'.'.$clause, '!=', $item[$clause]);
                                                 }
                                             }
                                         })->first();
