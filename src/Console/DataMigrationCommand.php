@@ -184,6 +184,16 @@ abstract class DataMigrationCommand extends Command
             ->filter(function ($class) use ($path) {
                 return $class->isSubclassOf(DataMigrationContract::class);
             })
+            ->sortBy(function ($class) {
+                if ($class->hasProperty('order')) {
+                    $reflectionProperty = $class->getProperty('order');
+                    $reflectionProperty->setAccessible(true);
+
+                    return $reflectionProperty->getValue(app($class->getName()));
+                }
+
+                return 0;
+            })
             ->values();
     }
 }
