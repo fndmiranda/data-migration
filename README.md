@@ -30,6 +30,13 @@ use Fndmiranda\DataMigration\Contracts\DataMigration;
 class PermissionDataMigration implements DataMigration
 {
     /**
+     * Order to execute this data-migration.
+     *
+     * @var int
+     */
+    protected $order = 0;
+
+    /**
      * Get the model being used by the data migration.
      *
      * @return string
@@ -60,6 +67,10 @@ class PermissionDataMigration implements DataMigration
     }
 }
 ```
+
+#### Property order
+
+The order property defines the order of execution of data migrations class.
 
 #### Method model
 
