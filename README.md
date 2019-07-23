@@ -305,6 +305,18 @@ Or with `DataMigration` facade:
 $synchronized = DataMigration::sync(\App\DataMigrations\PermissionDataMigration::class);
 ```
 
+Show a list of data-migrations with `data-migration:list` Artisan command:
+
+```terminal
+php artisan data-migration:list
+```
+
+Specifying the paths to search for data migrations.
+
+```terminal
+php artisan data-migration:list --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
 ## Usage with relationships
 
 Example of a permissions model with a relationship for dependencies of type belongsToMany with pivot_example_1 and 
