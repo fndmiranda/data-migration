@@ -418,6 +418,26 @@ type | Model relationship type, `belongsToMany` or `belongsTo`. | string
 identifier | Column with unique value to validate status (only with `belongsToMany`). | string
 show | Columns to show in commands output (only with `belongsToMany`). | array
 
+## Events
+
+Events when start and finish are available for when running a `data-migration:migrate` or `data-migration:sync` Artisan command.
+
+### onStartMigrate
+
+Create the `onStartMigrate` method in your data migration to be called before the `data-migration:migrate` Artisan command is executed.
+
+### onFinishMigrate
+
+Create the `onFinishMigrate` method in your data migration to be called after the `data-migration:migrate` Artisan command is executed.
+
+### onStartSync
+
+Create the `onStartSync` method in your data migration to be called before the `data-migration:sync` Artisan command is executed.
+
+### onFinishSync
+
+Create the `onFinishSync` method in your data migration to be called after the `data-migration:sync` Artisan command is executed.
+
 ## Security
 
 If you discover any security related issues, please email fndmiranda@gmail.com instead of using the issue tracker.

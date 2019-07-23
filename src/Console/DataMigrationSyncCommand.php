@@ -53,6 +53,10 @@ class DataMigrationSyncCommand extends DataMigrationCommand
      */
     protected function sync(string $migration)
     {
+        if (method_exists($this->getMigration(), 'onStartSync')) {
+            $this->getMigration()->onStartSync();
+        }
+
         $this->setMigration($migration);
 
         $this->getOutput()->writeln(sprintf('<comment>Calculating synchronization to %s:</comment>', $this->getMigration()->model()));
@@ -86,6 +90,10 @@ class DataMigrationSyncCommand extends DataMigrationCommand
                     $this->table($headers, $data['rows']);
                 }
             }
+        }
+
+        if (method_exists($this->getMigration(), 'onFinishSync')) {
+            $this->getMigration()->onFinishSync();
         }
     }
 }
