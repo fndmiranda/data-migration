@@ -23,6 +23,7 @@ class DataMigrationServiceProvider extends ServiceProvider
             Console\DataMigrationDiffCommand::class,
             Console\DataMigrationMigrateCommand::class,
             Console\DataMigrationSyncCommand::class,
+            Console\DataMigrationListCommand::class,
         ]);
     }
 }

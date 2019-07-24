@@ -35,6 +35,11 @@ trait StatusMany
                 break;
             case DataMigration::OK:
             case DataMigration::UPDATE:
+                $ref = $this->model->{$relation['relation']}();
+
+//                dd($ref->getRelated()->getTable());
+//                dd(get_class_methods($ref));
+
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
                     $hasItem = $this->hasRelationManyItem($item, $relation);
 
@@ -43,9 +48,8 @@ trait StatusMany
                             ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
                             ->first()
                             ->{$relation['relation']}()
-                            ->where($relation['identifier'], '=', $item[$relation['identifier']])
+                            ->where($ref->getRelated()->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
                             ->count();
-
 
                         if (!$count) {
                             $values['data'][$relation['relation']][$key] = [
@@ -64,8 +68,8 @@ trait StatusMany
                                     ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
                                     ->first()
                                     ->{$relation['relation']}()
-                                    ->where($relation['identifier'], '=', $item[$relation['identifier']])
-                                    ->where(function ($query) use ($relation, $item) {
+                                    ->where($ref->getRelated()->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
+                                    ->where(function ($query) use ($relation, $item, $ref) {
                                         $keys = array_keys($item);
                                         $clauses = Arr::where($keys, function ($value) use ($relation) {
                                             return $value != $relation['identifier'];
@@ -73,9 +77,9 @@ trait StatusMany
 
                                         foreach (array_values($clauses) as $key => $clause) {
                                             if (!$key) {
-                                                $query->where($clause, '!=', $item[$clause]);
+                                                $query->where($ref->getTable().'.'.$clause, '!=', $item[$clause]);
                                             } else {
-                                                $query->orWhere($clause, '!=', $item[$clause]);
+                                                $query->orWhere($ref->getTable().'.'.$clause, '!=', $item[$clause]);
                                             }
                                         }
                                     })->first();
@@ -105,11 +109,12 @@ trait StatusMany
                     return $item['data'][$relation['identifier']];
                 });
 
+
                 $removes = $this->model
                     ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
                     ->first()
                     ->{$relation['relation']}()
-                    ->whereNotIn($relation['identifier'], $identifiers)->get();
+                    ->whereNotIn($ref->getRelated()->getTable().'.'.$relation['identifier'], $identifiers)->get();
 
                 foreach ($removes as $remove) {
                     $values['data'][$relation['relation']][] = ['data' => $remove->toArray(), 'status' => DataMigration::DELETE];
