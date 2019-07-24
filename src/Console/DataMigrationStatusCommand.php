@@ -14,7 +14,8 @@ class DataMigrationStatusCommand extends DataMigrationCommand
      */
     protected $signature = 'data-migration:status
                             {migration? : The data migration to run}
-                            {--path=* : Path to find data migrations}';
+                            {--path=* : Path to find data migrations}
+                            {--tag=* : One or many tags that have data you want to migrate}';
 
     /**
      * The console command description.
@@ -33,7 +34,7 @@ class DataMigrationStatusCommand extends DataMigrationCommand
         if ($this->argument('migration')) {
             $this->status($this->argument('migration'));
         } else {
-            $collection = $this->findMigrations($this->option('path'));
+            $collection = $this->findMigrations($this->option('path'), $this->option('tag'));
 
             if ($collection->count()) {
                 foreach ($collection as $class) {
