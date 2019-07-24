@@ -59,7 +59,12 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
 
         $this->setMigration($migration);
 
-        $this->getOutput()->writeln(sprintf('<comment>Calculating migrate to %s:</comment>', $this->getMigration()->model()));
+        $this->getOutput()->writeln(sprintf(
+            '<comment>Calculating migrate %s of model %s to table %s:</comment>',
+            $migration,
+            $this->getMigration()->model(),
+            app($this->getMigration()->model())->getTable()
+        ));
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
         $progressBar->start();
 

@@ -37,85 +37,88 @@ trait StatusMany
             case DataMigration::UPDATE:
                 $ref = $this->model->{$relation['relation']}();
 
+//                dd($ref->getRelated()->getTable());
+//                dd(get_class_methods($ref));
+
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
                     $hasItem = $this->hasRelationManyItem($item, $relation);
 
                     if ($hasItem) {
                         $count = (bool)$this->model
-                                ->where($this->model->getTable().'.'.$this->options['identifier'], '=', $values['data'][$this->options['identifier']])
-                                ->first()
-                                ->{$relation['relation']}()
-                                ->where($ref->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
-                                ->count();
+                            ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
+                            ->first()
+                            ->{$relation['relation']}()
+                            ->where($ref->getRelated()->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
+                            ->count();
 
-                            if (!$count) {
-                                $values['data'][$relation['relation']][$key] = [
-                                    'data' => $item,
-                                    'status' => DataMigration::CREATE,
-                                ];
-                            } else {
-                                $update = false;
-                                $keys = array_keys($item);
-                                $clauses = Arr::where($keys, function ($value) use ($relation) {
-                                    return $value != $relation['identifier'];
-                                });
-
-                                if (count($clauses)) {
-                                    $update = $this->model
-                                        ->where($this->model->getTable().'.'.$this->options['identifier'], '=', $values['data'][$this->options['identifier']])
-                                        ->first()
-                                        ->{$relation['relation']}()
-                                        ->where($ref->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
-                                        ->where(function ($query) use ($relation, $item, $ref) {
-                                            $keys = array_keys($item);
-                                            $clauses = Arr::where($keys, function ($value) use ($relation) {
-                                                return $value != $relation['identifier'];
-                                            });
-
-                                            foreach (array_values($clauses) as $key => $clause) {
-                                                if (!$key) {
-                                                    $query->where($ref->getTable().'.'.$clause, '!=', $item[$clause]);
-                                                } else {
-                                                    $query->orWhere($ref->getTable().'.'.$clause, '!=', $item[$clause]);
-                                                }
-                                            }
-                                        })->first();
-                                }
-
-                                if ($update) {
-                                    $values['data'][$relation['relation']][$key] = [
-                                        'data' => array_merge($update->toArray(), $item),
-                                        'status' => DataMigration::UPDATE,
-                                    ];
-                                } else {
-                                    $values['data'][$relation['relation']][$key] = [
-                                        'data' => $item,
-                                        'status' => DataMigration::OK,
-                                    ];
-                                }
-                            }
-                        } else {
+                        if (!$count) {
                             $values['data'][$relation['relation']][$key] = [
                                 'data' => $item,
-                                'status' => DataMigration::NOT_FOUND,
+                                'status' => DataMigration::CREATE,
                             ];
+                        } else {
+                            $update = false;
+                            $keys = array_keys($item);
+                            $clauses = Arr::where($keys, function ($value) use ($relation) {
+                                return $value != $relation['identifier'];
+                            });
+
+                            if (count($clauses)) {
+                                $update = $this->model
+                                    ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
+                                    ->first()
+                                    ->{$relation['relation']}()
+                                    ->where($ref->getRelated()->getTable().'.'.$relation['identifier'], '=', $item[$relation['identifier']])
+                                    ->where(function ($query) use ($relation, $item, $ref) {
+                                        $keys = array_keys($item);
+                                        $clauses = Arr::where($keys, function ($value) use ($relation) {
+                                            return $value != $relation['identifier'];
+                                        });
+
+                                        foreach (array_values($clauses) as $key => $clause) {
+                                            if (!$key) {
+                                                $query->where($ref->getTable().'.'.$clause, '!=', $item[$clause]);
+                                            } else {
+                                                $query->orWhere($ref->getTable().'.'.$clause, '!=', $item[$clause]);
+                                            }
+                                        }
+                                    })->first();
+                            }
+
+                            if ($update) {
+                                $values['data'][$relation['relation']][$key] = [
+                                    'data' => array_merge($update->toArray(), $item),
+                                    'status' => DataMigration::UPDATE,
+                                ];
+                            } else {
+                                $values['data'][$relation['relation']][$key] = [
+                                    'data' => $item,
+                                    'status' => DataMigration::OK,
+                                ];
+                            }
                         }
+                    } else {
+                        $values['data'][$relation['relation']][$key] = [
+                            'data' => $item,
+                            'status' => DataMigration::NOT_FOUND,
+                        ];
                     }
+                }
 
-                    $identifiers = collect($values['data'][$relation['relation']])->map(function ($item) use ($relation) {
-                        return $item['data'][$relation['identifier']];
-                    });
+                $identifiers = collect($values['data'][$relation['relation']])->map(function ($item) use ($relation) {
+                    return $item['data'][$relation['identifier']];
+                });
 
 
-                    $removes = $this->model
-                        ->where($this->model->getTable().'.'.$this->options['identifier'], '=', $values['data'][$this->options['identifier']])
-                        ->first()
-                        ->{$relation['relation']}()
-                        ->whereNotIn($ref->getTable().'.'.$relation['identifier'], $identifiers)->get();
+                $removes = $this->model
+                    ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])
+                    ->first()
+                    ->{$relation['relation']}()
+                    ->whereNotIn($ref->getRelated()->getTable().'.'.$relation['identifier'], $identifiers)->get();
 
-                    foreach ($removes as $remove) {
-                        $values['data'][$relation['relation']][] = ['data' => $remove->toArray(), 'status' => DataMigration::DELETE];
-                    }
+                foreach ($removes as $remove) {
+                    $values['data'][$relation['relation']][] = ['data' => $remove->toArray(), 'status' => DataMigration::DELETE];
+                }
 
                 break;
         }
