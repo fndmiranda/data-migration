@@ -95,8 +95,10 @@ abstract class DataMigrationCommand extends Command
                                 Arr::set($this->relationships, $relation['relation'], ['rows' => []]);
                             }
 
-                            $this->relationships[$relation['relation']]['headers'] = $this->getHeaders($relation['show']);
-                            $this->relationships[$relation['relation']]['rows'][] = $this->getRow($item['data'][$relation['relation']], $relation['show']);
+                            $show = array_keys($item['data'][$relation['relation']]['data']);
+
+                            $this->relationships[$relation['relation']]['headers'] = $this->getHeaders($show);
+                            $this->relationships[$relation['relation']]['rows'][] = $this->getRow($item['data'][$relation['relation']], $show);
                             break;
                     }
                 }
@@ -181,6 +183,16 @@ abstract class DataMigrationCommand extends Command
             })
             ->filter(function ($class) use ($path) {
                 return $class->isSubclassOf(DataMigrationContract::class);
+            })
+            ->sortBy(function ($class) {
+                if ($class->hasProperty('order')) {
+                    $reflectionProperty = $class->getProperty('order');
+                    $reflectionProperty->setAccessible(true);
+
+                    return $reflectionProperty->getValue(app($class->getName()));
+                }
+
+                return 0;
             })
             ->values();
     }

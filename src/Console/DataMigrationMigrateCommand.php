@@ -53,9 +53,18 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      */
     protected function migrate(string $migration)
     {
+        if (method_exists($this->getMigration(), 'onStartMigrate')) {
+            $this->getMigration()->onStartMigrate();
+        }
+
         $this->setMigration($migration);
 
-        $this->getOutput()->writeln(sprintf('<comment>Calculating migrate to %s:</comment>', $this->getMigration()->model()));
+        $this->getOutput()->writeln(sprintf(
+            '<comment>Calculating migrate %s of model %s to table %s:</comment>',
+            $migration,
+            $this->getMigration()->model(),
+            app($this->getMigration()->model())->getTable()
+        ));
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
         $progressBar->start();
 
@@ -93,6 +102,10 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
                     $this->table($headers, $relation_rows);
                 }
             }
+        }
+
+        if (method_exists($this->getMigration(), 'onFinishMigrate')) {
+            $this->getMigration()->onFinishMigrate();
         }
     }
 }

@@ -30,6 +30,13 @@ use Fndmiranda\DataMigration\Contracts\DataMigration;
 class PermissionDataMigration implements DataMigration
 {
     /**
+     * Order to execute this data-migration.
+     *
+     * @var int
+     */
+    protected $order = 0;
+
+    /**
      * Get the model being used by the data migration.
      *
      * @return string
@@ -60,6 +67,10 @@ class PermissionDataMigration implements DataMigration
     }
 }
 ```
+
+#### Property order
+
+The order property defines the order of execution of data migrations class.
 
 #### Method model
 
@@ -294,6 +305,18 @@ Or with `DataMigration` facade:
 $synchronized = DataMigration::sync(\App\DataMigrations\PermissionDataMigration::class);
 ```
 
+Show a list of data-migrations with `data-migration:list` Artisan command:
+
+```terminal
+php artisan data-migration:list
+```
+
+Specifying the paths to search for data migrations.
+
+```terminal
+php artisan data-migration:list --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
 ## Usage with relationships
 
 Example of a permissions model with a relationship for dependencies of type belongsToMany with pivot_example_1 and 
@@ -392,8 +415,6 @@ public function options()
            [
                'type' => 'belongsTo',
                'relation' => 'brand',
-               'identifier' => 'name',
-               'show' => ['name'],
            ],
        ],
    ];
@@ -406,8 +427,28 @@ Key | Description | Type
 --- | --- | ---
 relation | Name of the relationship of the model. | string
 type | Model relationship type, `belongsToMany` or `belongsTo`. | string
-identifier | Column with unique value to validate status. | string
-show | Columns to show in commands output. | array
+identifier | Column with unique value to validate status (only with `belongsToMany`). | string
+show | Columns to show in commands output (only with `belongsToMany`). | array
+
+## Events
+
+Events when start and finish are available for when running a `data-migration:migrate` or `data-migration:sync` Artisan command.
+
+### onStartMigrate
+
+Create the `onStartMigrate` method in your data migration to be called before the `data-migration:migrate` Artisan command is executed.
+
+### onFinishMigrate
+
+Create the `onFinishMigrate` method in your data migration to be called after the `data-migration:migrate` Artisan command is executed.
+
+### onStartSync
+
+Create the `onStartSync` method in your data migration to be called before the `data-migration:sync` Artisan command is executed.
+
+### onFinishSync
+
+Create the `onFinishSync` method in your data migration to be called after the `data-migration:sync` Artisan command is executed.
 
 ## Security
 

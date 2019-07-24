@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Fndmiranda\DataMigration\DataMigration;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 trait HasStatus
