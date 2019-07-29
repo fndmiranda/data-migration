@@ -1,3 +1,9 @@
+<p align="center">
+<a href="https://packagist.org/packages/fndmiranda/data-migration"><img src="https://poser.pugx.org/fndmiranda/data-migration/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/fndmiranda/data-migration"><img src="https://poser.pugx.org/fndmiranda/data-migration/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/fndmiranda/data-migration"><img src="https://poser.pugx.org/fndmiranda/data-migration/license.svg" alt="License"></a>
+</p>
+
 # Data migrations from Laravel
 
 This package simplifies the migration and synchronization of data between the application and the database, 
