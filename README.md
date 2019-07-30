@@ -1,3 +1,12 @@
+<h1 align="center">Data Migration</h1>
+
+<p align="center">
+<a href="https://travis-ci.org/fndmiranda/data-migration"><img src="https://img.shields.io/travis/fndmiranda/data-migration.svg?style=flat-square"></a>
+<a href="https://packagist.org/packages/fndmiranda/data-migration"><img src="https://poser.pugx.org/fndmiranda/data-migration/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/fndmiranda/data-migration"><img src="https://poser.pugx.org/fndmiranda/data-migration/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/fndmiranda/data-migration"><img src="https://poser.pugx.org/fndmiranda/data-migration/license.svg" alt="License"></a>
+</p>
+
 # Data migrations from Laravel
 
 This package simplifies the migration and synchronization of data between the application and the database, 
@@ -35,6 +44,13 @@ class PermissionDataMigration implements DataMigration
      * @var int
      */
     protected $order = 0;
+    
+    /**
+     * Tag to filter on data-migrations search.
+     *
+     * @var string
+     */
+    protected $tag = 'production';
 
     /**
      * Get the model being used by the data migration.
@@ -68,9 +84,14 @@ class PermissionDataMigration implements DataMigration
 }
 ```
 
-#### Property order
+#### Property order (optional)
 
-The order property defines the order of execution of data migrations class.
+The order property defines the order of execution of data migrations class, default value is `0`.
+
+#### Property tag (optional)
+
+The `tag` property is used in filter of data-migrations search, default value is `production`, if another value is 
+set, it will have to pass to the tag parameter when executing the command.
 
 #### Method model
 
@@ -159,6 +180,12 @@ Specifying the paths to search for data migrations.
 php artisan data-migration:status --path=path/with/data/migrations --path=other/path/with/data/migrations
 ```
 
+Specifying the tags to search for data migrations.
+
+```terminal
+php artisan data-migration:status --tag=staging --path=local
+```
+
 Run `data-migration:status` only specific a data migration.
 
 ```terminal
@@ -202,6 +229,12 @@ Specifying the paths to search for data migrations.
 php artisan data-migration:diff --path=path/with/data/migrations --path=other/path/with/data/migrations
 ```
 
+Specifying the tags to search for data migrations.
+
+```terminal
+php artisan data-migration:diff --tag=staging --path=local
+```
+
 Run `data-migration:diff` only specific a data migration.
 
 ```terminal
@@ -242,6 +275,12 @@ Specifying the paths to search for data migrations.
 php artisan data-migration:migrate --path=path/with/data/migrations --path=other/path/with/data/migrations
 ```
 
+Specifying the tags to search for data migrations.
+
+```terminal
+php artisan data-migration:migrate --tag=staging --path=local
+```
+
 Run `data-migration:migrate` only specific a data migration.
 
 ```terminal
@@ -276,6 +315,12 @@ Specifying the paths to search for data migrations.
 
 ```terminal
 php artisan data-migration:sync --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
+Specifying the tags to search for data migrations.
+
+```terminal
+php artisan data-migration:sync --tag=staging --path=local
 ```
 
 Run `data-migration:sync` only specific a data migration.
@@ -315,6 +360,12 @@ Specifying the paths to search for data migrations.
 
 ```terminal
 php artisan data-migration:list --path=path/with/data/migrations --path=other/path/with/data/migrations
+```
+
+Specifying the tags to search for data migrations.
+
+```terminal
+php artisan data-migration:list --tag=staging --path=local
 ```
 
 ## Usage with relationships

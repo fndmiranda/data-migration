@@ -25,7 +25,6 @@ trait MigrateMany
         foreach ($values['data'][$relation['relation']] as $key => $item) {
             if ($item['status'] == DataMigration::CREATE) {
                 $data = $relationModel->where($relation['identifier'], '=', $item['data'][$relation['identifier']])->first();
-//                dump('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'.$data->id);
 
                 $this->model
                     ->where($this->options['identifier'], '=', $values['data'][$this->options['identifier']])

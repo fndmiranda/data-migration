@@ -15,7 +15,8 @@ class DataMigrationListCommand extends DataMigrationCommand
      * @var string
      */
     protected $signature = 'data-migration:list
-                            {--path=* : Path to find data migrations}';
+                            {--path=* : Path to find data migrations}
+                            {--tag=* : One or many tags that have data you want to migrate}';
 
     /**
      * The console command description.
@@ -31,13 +32,14 @@ class DataMigrationListCommand extends DataMigrationCommand
      */
     public function handle()
     {
-        $collection = $this->findMigrations($this->option('path'));
+        $collection = $this->findMigrations($this->option('path'), $this->option('tag'));
 
         if ($collection->count()) {
-            $rows = $collection->map(function ($migration) {
+            $rows = $collection->map(function ($reflectionClass) {
                 return [
-                    'class' => $migration->getName(),
-                    'filename' => $migration->getFileName(),
+                    'class' => $reflectionClass->getName(),
+                    'filename' => $reflectionClass->getFileName(),
+                    'tag' => $this->getTag($reflectionClass),
                 ];
             });
 
@@ -46,7 +48,7 @@ class DataMigrationListCommand extends DataMigrationCommand
             $toolbarMessage = sprintf('<fg=yellow>Total:</> %d data-%s', $collection->count(), Str::plural('migration', $collection->count()));
             $rows->push([new TableCell($toolbarMessage, ['colspan' => 2])]);
 
-            $this->table(['class', 'filename'], $rows);
+            $this->table(['filename', 'class', 'tag'], $rows);
         } else {
             $this->info('No data migration found.');
         }

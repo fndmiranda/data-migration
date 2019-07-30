@@ -22,9 +22,18 @@
       "php": ">=7.0.0",
       "laravel/framework": "^5.5"
     },
+    "require-dev": {
+      "phpunit/phpunit": "^5.7|6.2|^7.0",
+      "orchestra/testbench": "~3.5.0|~3.6.0|~3.7.0"
+    },
     "autoload": {
       "psr-4": {
         "Fndmiranda\\DataMigration\\": "src/"
+      }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Fndmiranda\\DataMigration\\Tests\\": "tests"
       }
     },
     "extra": {
@@ -33,6 +42,9 @@
           "Fndmiranda\\DataMigration\\DataMigrationServiceProvider"
         ]
       }
+    },
+    "scripts": {
+      "test": "phpunit"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

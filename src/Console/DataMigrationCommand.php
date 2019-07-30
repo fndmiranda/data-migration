@@ -47,6 +47,13 @@ abstract class DataMigrationCommand extends Command
     protected $relationships = [];
 
     /**
+     * Constant representing default tag.
+     *
+     * @var string
+     */
+    const TAG = 'production';
+
+    /**
      * Get a data migration instance.
      *
      * @return DataMigrationContract
@@ -161,14 +168,38 @@ abstract class DataMigrationCommand extends Command
     }
 
     /**
+     * Get tag of the data-migration in reflection class.
+     *
+     * @param ReflectionClass $reflectionClass
+     * @return mixed|string
+     * @throws \ReflectionException
+     */
+    protected function getTag(ReflectionClass $reflectionClass)
+    {
+        if ($reflectionClass->hasProperty('tag')) {
+            $reflectionProperty = $reflectionClass->getProperty('tag');
+            $reflectionProperty->setAccessible(true);
+
+            $propertyValue = $reflectionProperty->getValue(app($reflectionClass->getName()));
+            if (!is_null($propertyValue)) {
+                return $propertyValue;
+            }
+        }
+
+        return self::TAG;
+    }
+
+    /**
      * Find data migrations.
      *
      * @param array $path Path to find data migrations
+     * @param array $tag One or many tags that have data you want to migrate
      * @return mixed|Collection
      */
-    protected function findMigrations(array $path = [])
+    protected function findMigrations(array $path = [], array $tag = [])
     {
         $path = empty($path) ? app_path() : $path;
+        $tags = empty($tag) ? [self::TAG] : $tag;
         $finder = new Finder();
 
         $finder->name('*.php')->notName('*.blade.php')->files()->in($path);
@@ -178,18 +209,21 @@ abstract class DataMigrationCommand extends Command
         }
 
         return collect(get_declared_classes())
-            ->map(function ($class) {
-                return new ReflectionClass($class);
+            ->map(function ($reflectionClass) {
+                return new ReflectionClass($reflectionClass);
             })
-            ->filter(function ($class) use ($path) {
-                return $class->isSubclassOf(DataMigrationContract::class);
+            ->filter(function ($reflectionClass) use ($path) {
+                return $reflectionClass->isSubclassOf(DataMigrationContract::class);
             })
-            ->sortBy(function ($class) {
-                if ($class->hasProperty('order')) {
-                    $reflectionProperty = $class->getProperty('order');
+            ->filter(function ($reflectionClass) use ($tags) {
+                return in_array($this->getTag($reflectionClass), $tags);
+            })
+            ->sortBy(function ($reflectionClass) {
+                if ($reflectionClass->hasProperty('order')) {
+                    $reflectionProperty = $reflectionClass->getProperty('order');
                     $reflectionProperty->setAccessible(true);
 
-                    return $reflectionProperty->getValue(app($class->getName()));
+                    return (int) $reflectionProperty->getValue(app($reflectionClass->getName()));
                 }
 
                 return 0;
