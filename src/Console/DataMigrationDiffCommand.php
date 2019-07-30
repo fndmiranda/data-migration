@@ -15,7 +15,8 @@ class DataMigrationDiffCommand extends DataMigrationCommand
      */
     protected $signature = 'data-migration:diff
                             {migration? : The data migration to run}
-                            {--path=* : Path to find data migrations}';
+                            {--path=* : Path to find data migrations}
+                            {--tag=* : One or many tags that have data you want to migrate}';
 
     /**
      * The console command description.
@@ -34,7 +35,7 @@ class DataMigrationDiffCommand extends DataMigrationCommand
         if ($this->argument('migration')) {
             $this->diff($this->argument('migration'));
         } else {
-            $collection = $this->findMigrations($this->option('path'));
+            $collection = $this->findMigrations($this->option('path'), $this->option('tag'));
 
             if ($collection->count()) {
                 foreach ($collection as $class) {
@@ -55,7 +56,12 @@ class DataMigrationDiffCommand extends DataMigrationCommand
     {
         $this->setMigration($migration);
 
-        $this->getOutput()->writeln(sprintf('<comment>Calculating diff to %s:</comment>', $this->getMigration()->model()));
+        $this->getOutput()->writeln(sprintf(
+            '<comment>Calculating diff %s of model %s to table %s:</comment>',
+            $migration,
+            $this->getMigration()->model(),
+            app($this->getMigration()->model())->getTable()
+        ));
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
         $progressBar->start();
 
