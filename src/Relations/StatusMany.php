@@ -150,7 +150,7 @@ trait StatusMany
 
         if (!$relationData) {
             $relationData = (bool) $this->data->filter(function ($value) use ($item, $relation) {
-                return $value['data'][$relation['identifier']] == $item[$relation['identifier']] && $value['status'] == DataMigration::CREATE;
+                return isset($value['data'][$relation['identifier']]) && $value['data'][$relation['identifier']] == $item[$relation['identifier']] && $value['status'] == DataMigration::CREATE;
             })->count();
         }
 
