@@ -79,6 +79,7 @@ abstract class DataMigrationCommand extends Command
     protected function prepare($data, $options)
     {
         $relations = Arr::get($options, 'relations', []);
+        $this->rows = [];
 
         foreach ($data as $key => $item) {
             $this->rows[] = $this->getRow($item, $options['show']);
