@@ -501,6 +501,12 @@ Create the `onStartSync` method in your data migration to be called before the `
 
 Create the `onFinishSync` method in your data migration to be called after the `data-migration:sync` Artisan command is executed.
 
+## Testing
+
+```terminal
+composer test
+```
+
 ## Security
 
 If you discover any security related issues, please email fndmiranda@gmail.com instead of using the issue tracker.
