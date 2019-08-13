@@ -72,12 +72,12 @@ trait HasStatus
                 $update = $this->model->where(function ($query) use ($clauses, $item) {
                     foreach (array_values($clauses) as $key => $clause) {
                         if (!$key) {
-                            $query->where($clause, '!=', $item[$clause]);
+                            $query->where($clause, '!=', self::normalizeData($item[$clause]));
                         } else {
-                            $query->orWhere($clause, '!=', $item[$clause]);
+                            $query->orWhere($clause, '!=', self::normalizeData($item[$clause]));
                         }
                     }
-                })->where($this->options['identifier'], '=', $item[$this->options['identifier']])->first();
+                })->where($this->options['identifier'], '=', self::normalizeData($item[$this->options['identifier']]))->first();
 
                 if ($update) {
                     $relationsData = Arr::only($item, Arr::pluck($relations, 'relation'));
@@ -131,5 +131,19 @@ trait HasStatus
         }
 
         return $this;
+    }
+    
+    /**
+     * Normalize data to update
+     * @param $data
+     * @return false|string
+     */
+    private function normalizeData($data)
+    {
+        if (is_array($data) || is_object($data)) {
+            return json_encode($data);
+        } else {
+            return $data;
+        }
     }
 }
