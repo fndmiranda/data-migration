@@ -30,7 +30,7 @@ trait HasMigrate
             foreach ($status as $key => $item) {
                 if ($item['status'] == DataMigration::CREATE) {
                     $relationsData = Arr::only($item['data'], Arr::pluck($relations, 'relation'));
-                    $entity = $this->model->create($item['data']);
+                    $entity = $this->model->create(Arr::except($item['data'], Arr::pluck($relations, 'relation')));
                     $status->put($key, [
                         'data' => array_merge($entity->toArray(), $relationsData),
                         'status' => DataMigration::CREATE,
