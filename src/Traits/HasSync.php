@@ -58,6 +58,14 @@ trait HasSync
                         $except = Arr::pluck($relations, 'relation');
                         $only = array_flip(Arr::except($keys, $except));
 
+                        $belongsTo = Arr::where($relations, function ($value, $key) {
+                            return $value['type'] == 'belongsTo';
+                        });
+
+                        foreach ($belongsTo as $to) {
+                            array_push($only, $this->model->{$to['relation']}()->getForeignKey());
+                        }
+
                         $instance->update(Arr::only($item['data'], $only));
                         $status->put($key, [
                             'data' => array_merge($instance->toArray(), $relationsData),
