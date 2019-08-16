@@ -4,6 +4,7 @@ namespace Fndmiranda\DataMigration\Console;
 
 use Fndmiranda\DataMigration\Facades\DataMigration;
 use Illuminate\Support\Arr;
+use Modules\Core\Entities\TipoNotificacao;
 use Symfony\Component\Console\Helper\TableCell;
 
 class DataMigrationMigrateCommand extends DataMigrationCommand
@@ -54,11 +55,11 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      */
     protected function migrate(string $migration)
     {
+        $this->setMigration($migration);
+
         if (method_exists($this->getMigration(), 'onStartMigrate')) {
             $this->getMigration()->onStartMigrate();
         }
-
-        $this->setMigration($migration);
 
         $this->getOutput()->writeln(sprintf(
             '<comment>Calculating migrate %s of model %s to table %s:</comment>',
