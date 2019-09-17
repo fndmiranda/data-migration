@@ -32,7 +32,7 @@ trait HasSync
                 switch ($item['status']) {
                     case DataMigration::CREATE:
                         $relationsData = Arr::only($item['data'], Arr::pluck($relations, 'relation'));
-                        $entity = $this->model->create($item['data']);
+                        $entity = $this->model->create(Arr::except($item['data'], Arr::pluck($relations, 'relation')));
                         $status->put($key, [
                             'data' => array_merge($entity->toArray(), $relationsData),
                             'status' => DataMigration::CREATE,
@@ -53,7 +53,20 @@ trait HasSync
                     case DataMigration::UPDATE:
                         $instance = $this->model->find($item['data'][$this->model->getKeyName()]);
                         $relationsData = Arr::only($item['data'], Arr::pluck($relations, 'relation'));
-                        $instance->update($item['data']);
+
+                        $keys = array_flip(array_keys($dataMigrate->data()[$key]));
+                        $except = Arr::pluck($relations, 'relation');
+                        $only = array_flip(Arr::except($keys, $except));
+
+                        $belongsTo = Arr::where($relations, function ($value, $key) {
+                            return $value['type'] == 'belongsTo';
+                        });
+
+                        foreach ($belongsTo as $to) {
+                            array_push($only, $this->model->{$to['relation']}()->getForeignKey());
+                        }
+
+                        $instance->update(Arr::only($item['data'], $only));
                         $status->put($key, [
                             'data' => array_merge($instance->toArray(), $relationsData),
                             'status' => DataMigration::UPDATE,

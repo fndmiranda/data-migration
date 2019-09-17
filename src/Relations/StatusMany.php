@@ -37,9 +37,6 @@ trait StatusMany
             case DataMigration::UPDATE:
                 $ref = $this->model->{$relation['relation']}();
 
-//                dd($ref->getRelated()->getTable());
-//                dd(get_class_methods($ref));
-
                 foreach ($values['data'][$relation['relation']] as $key => $item) {
                     $hasItem = $this->hasRelationManyItem($item, $relation);
 

@@ -132,11 +132,12 @@ trait HasStatus
 
         return $this;
     }
-    
+
     /**
-     * Normalize data to update
+     * Normalize data to update.
+     *
      * @param $data
-     * @return false|string
+     * @return boolean|string
      */
     private function normalizeData($data)
     {

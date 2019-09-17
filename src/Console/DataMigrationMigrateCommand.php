@@ -54,11 +54,11 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
      */
     protected function migrate(string $migration)
     {
+        $this->setMigration($migration);
+
         if (method_exists($this->getMigration(), 'onStartMigrate')) {
             $this->getMigration()->onStartMigrate();
         }
-
-        $this->setMigration($migration);
 
         $this->getOutput()->writeln(sprintf(
             '<comment>Calculating migrate %s of model %s to table %s:</comment>',
