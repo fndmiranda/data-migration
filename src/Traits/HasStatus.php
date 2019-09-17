@@ -41,7 +41,7 @@ trait HasStatus
      * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function status($dataMigrate, $progressBar = null)
+    public function status($dataMigrate, $progressBar = null, $output = null)
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         $this->model = app($dataMigrate->model());
@@ -95,11 +95,20 @@ trait HasStatus
             }
         }
 
+        if ($progressBar) {
+            $progressBar->finish();
+        }
+
+        if ($output) {
+            $output->newLine();
+            $output->writeln('Calculating relationships');
+        }
+
         foreach ($removes as $remove) {
             $this->data->push(['data' => $remove->toArray(), 'status' => DataMigration::DELETE]);
         }
 
-        $this->withRelationsStatus();
+        $this->withRelationsStatus($progressBar);
 
         return $this->data;
     }
@@ -109,9 +118,14 @@ trait HasStatus
      *
      * @return $this
      */
-    private function withRelationsStatus()
+    private function withRelationsStatus($progressBar = null)
     {
         $relations = Arr::get($this->options, 'relations', []);
+
+        if ($progressBar) {
+            $progressBar->setMaxSteps(count($this->data));
+            $progressBar->start();
+        }
 
         foreach ($this->data as $key => $item) {
             foreach ($relations as $relation) {
@@ -128,6 +142,13 @@ trait HasStatus
             }
 
             $this->data->put($key, $item);
+
+            if ($progressBar) {
+                $progressBar->advance();
+            }
+        }
+        if ($progressBar) {
+            $progressBar->finish();
         }
 
         return $this;
