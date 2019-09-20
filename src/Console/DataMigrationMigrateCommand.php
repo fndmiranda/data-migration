@@ -4,7 +4,6 @@ namespace Fndmiranda\DataMigration\Console;
 
 use Fndmiranda\DataMigration\Facades\DataMigration;
 use Illuminate\Support\Arr;
-use Modules\Core\Entities\TipoNotificacao;
 use Symfony\Component\Console\Helper\TableCell;
 
 class DataMigrationMigrateCommand extends DataMigrationCommand
@@ -70,7 +69,7 @@ class DataMigrationMigrateCommand extends DataMigrationCommand
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
         $progressBar->start();
 
-        $data = DataMigration::migrate($this->getMigration(), $progressBar)->toArray();
+        $data = DataMigration::migrate($this->getMigration(), $progressBar, $this->output)->toArray();
         $options = $this->getMigration()->options();
         $this->prepare($data, $options);
 

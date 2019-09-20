@@ -19,10 +19,10 @@ trait HasSync
      * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function sync($dataMigrate, $progressBar = null)
+    public function sync($dataMigrate, $progressBar = null, $output = null)
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
-        $status = $this->diff($dataMigrate, $progressBar);
+        $status = $this->diff($dataMigrate, $progressBar, $output = null);
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $relations = Arr::get($options, 'relations', []);
         $isSoftDeletes = in_array(SoftDeletes::class, class_uses($this->model));
