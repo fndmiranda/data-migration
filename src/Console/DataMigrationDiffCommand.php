@@ -65,7 +65,7 @@ class DataMigrationDiffCommand extends DataMigrationCommand
         $progressBar = $this->output->createProgressBar(count($this->getMigration()->data()));
         $progressBar->start();
 
-        $data = DataMigration::diff($this->getMigration(), $progressBar)->toArray();
+        $data = DataMigration::diff($this->getMigration(), $progressBar, $this->output)->toArray();
         $options = $this->getMigration()->options();
         $this->prepare($data, $options);
 
