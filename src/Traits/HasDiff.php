@@ -17,10 +17,10 @@ trait HasDiff
      * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function diff($dataMigrate, $progressBar = null)
+    public function diff($dataMigrate, $progressBar = null, $output = null)
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
-        $status = $this->status($dataMigrate, $progressBar)->toArray();
+        $status = $this->status($dataMigrate, $progressBar, $output)->toArray();
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $relations = Arr::get($options, 'relations', []);
         $status_no_changes = [DataMigration::OK, DataMigration::NOT_FOUND];

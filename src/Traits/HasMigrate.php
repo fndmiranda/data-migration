@@ -18,11 +18,11 @@ trait HasMigrate
      * @param ProgressBar $progressBar
      * @return Collection
      */
-    public function migrate($dataMigrate, $progressBar = null)
+    public function migrate($dataMigrate, $progressBar = null, $output = null)
     {
         $dataMigrate = $dataMigrate instanceof ContractDataMigration ? $dataMigrate : app($dataMigrate);
         /* @var $status Collection */
-        $status = $this->status($dataMigrate, $progressBar);
+        $status = $this->status($dataMigrate, $progressBar, $output);
         $options = $dataMigrate->options() instanceof Collection ? $dataMigrate->options() : Collection::make($dataMigrate->options());
         $relations = Arr::get($options, 'relations', []);
 
